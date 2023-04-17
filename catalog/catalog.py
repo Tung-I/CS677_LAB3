@@ -86,9 +86,16 @@ def init_catalog(
         with open(file_path, 'w', encoding='utf-8') as f:
             if not init_data:
                 init_data = {
-                    "AAPL": {"name": "Apple Inc.", "price": 15.99, "remaining_quantity": 1000, "accumulated_volume": 0},
-                    "GOOG": {"name": "Alphabet Inc.", "price": 16.99, "remaining_quantity": 1000, "accumulated_volume": 0},
-                    "MSFT": {"name": "Microsoft Corporation", "price": 17.99, "remaining_quantity": 1000, "accumulated_volume": 0} 
+                    "AAPL": {"name": "Apple Inc.", "price": 15.99, "remaining_quantity": 100, "accumulated_volume": 0},
+                    "GOOG": {"name": "Alphabet Inc.", "price": 16.99, "remaining_quantity": 100, "accumulated_volume": 0},
+                    "MSFT": {"name": "Microsoft Corporation", "price": 17.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "SPX": {"name": "S&P 500 Index", "price": 10.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "OEX": {"name": "S&P 100 Index", "price": 11.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "DJX": {"name": "Dow Jones Industrial Average", "price": 12.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "NDX": {"name": "NASDAQ 100 Stick Index", "price": 13.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "CPQ": {"name": "Compaq Computer Corp", "price": 14.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "INTC": {"name": "Intel Corp", "price": 9.99, "remaining_quantity": 100, "accumulated_volume": 0}, 
+                    "IBM": {"name": "International Business Machines Corp", "price": 21.99, "remaining_quantity": 100, "accumulated_volume": 0} 
                 }
             json.dump(init_data, f, ensure_ascii=False, indent=4)
 

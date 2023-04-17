@@ -74,8 +74,93 @@ class RWLock(object):
             self.w_release()
 
 
+
+def lookup(
+    file_path: str,
+    order_number: str,
+    rwlock: RWLock
+    ):
+    """
+    Return:
+        returns the corresponding order details, or -1 if the number doesn't exist.
+    """
+    with rwlock.r_locked():
+        with open(file_path, newline='') as f:
+            csv_reader = csv.reader(f)
+            for row in csv_reader:
+                if row[0] == order_number:
+                    return row
+            return -1
+        
+
 # Define a request handler that inherits from BaseHTTPRequestHandler
 class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
+    # Handle the order number query from the frontend 
+    def do_GET(self):   
+        # If the request is for stock lookup
+        if self.path.startswith("/order?order_number"):   
+            # Check the validity of URL
+            if self.path.split('?')[0] != '/order' or self.path.split('?')[-1].split('=')[0] != 'order_number':
+                self.send_response(400)
+                self.send_header("Content-type", "text/plain")
+                self.end_headers()
+                response = {
+                    "error": {
+                        "code": 400, 
+                        "message": f"invalid URL: {self.path}"
+                    }
+                }
+                self.wfile.write(json.dumps(response).encode())
+                return
+
+            order_number = self.path.partition("=")[-1]
+
+            # Look up the order number
+            lookup_result = lookup(os.path.join(self.server.out_dir, 'order.csv'), order_number, self.server.rwlock)
+
+            # If the order number is not found, return an error response
+            if lookup_result == -1:
+                self.send_response(404)
+                self.send_header("Content-type", "text/plain")
+                self.end_headers()
+                response = {
+                    "error": {
+                        "code": 404,
+                        "message": "Order number not found",
+                    }
+                }
+
+            # If the order_number is found, return the data as a response
+            else:
+                self.send_response(200)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                response = {
+                    "data": {
+                        "number": order_number,
+                        "name": lookup_result[1],
+                        "type": lookup_result[-1],
+                        "quantity": lookup_result[2],
+                    }
+                }
+
+            self.wfile.write(json.dumps(response).encode())
+        
+        # If the URL does not start with "/order?order_number"
+        else:
+            self.send_response(400)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            response = {
+                "error": {
+                    "code": 400, 
+                    "message": "invalid URL"
+                }
+            }
+            self.wfile.write(json.dumps(response).encode())
+
+
+
     # Handle POST requests
     def do_POST(self):
         # Handle stock order request

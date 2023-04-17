@@ -1,0 +1,89 @@
+{
+    "0": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        }
+    },
+    "1": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        }
+    },
+    "2": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    },
+    "3": {
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        }
+    },
+    "4": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        }
+    },
+    "5": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    }
+}
