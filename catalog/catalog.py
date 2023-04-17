@@ -3,10 +3,13 @@ import http.server
 import argparse
 import socket
 import os
+import requests
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 from contextlib import contextmanager
 from threading  import Lock
+
+############### TO DO
 
 
 # Define the filename for the catalog JSON file
@@ -272,14 +275,24 @@ class CatalogRequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write("Invalid trading volumn or excessive trading occurs".encode())
 
+        # Send an invalidation request to the frontend
+        url = f'http://{self.server.frontend_host}:{self.server.frontend_port}/invalidation?stock={stock_name}'
+        frontend_response = requests.get(url)
+        if frontend_response.status_code != 200:
+            raise RuntimeError('Problematic response to the invalidation request')
+
+
 # Define a subclass of HTTPServer that uses threading to handle multiple requests concurrently
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     # Override the init function to save metadata in the server
-    def __init__(self, host_port_tuple, streamhandler, out_dir):
+    def __init__(self, host_port_tuple, streamhandler, out_dir, args):
         super().__init__(host_port_tuple, streamhandler)
         self.out_dir = out_dir
         self.rwlock = RWLock()
         self.protocol_version = 'HTTP/1.1'
+        self.frontend_host = args.frontend_host
+        self.frontend_port = args.frontend_port
+        self.stock_name_list = ["AAPL", "GOOG", "MSFT", "SPX", "OEX", "DJX", "NDX", "CPQ", "INTC", "IBM"]
 
     # Override the server_bind method to set a socket option for reusing the address
     def server_bind(self):
@@ -289,7 +302,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 # Define the main function that runs the server
 def main(args):
     # Create a threaded HTTP server that listens on the specified port and handles requests with the CatalogRequestHandler class
-    httpd = ThreadedHTTPServer(("", args.port), CatalogRequestHandler, args.out_dir)
+    httpd = ThreadedHTTPServer(("", args.port), CatalogRequestHandler, args.out_dir, args)
 
     # Initiate the stocks and prices in the catalog
     init_catalog(os.path.join(args.out_dir, "catalog.json"), httpd.rwlock)
@@ -303,11 +316,15 @@ if __name__ == "__main__":
     # Create an argument parser to read command-line arguments
     parser = argparse.ArgumentParser(description='Server.')
 
-   # Add an argument for specifying the port number
+    # Add an argument for specifying the port number
     parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('CATALOG_LISTENING_PORT'), type=int)
 
     # Add an argument for the output directory
     parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)
+
+    # Assign the host and the port of the frontend service 
+    parser.add_argument('--frontend_host', dest='frontend_host', help='Frontend Host', default=os.environ.get('FRONTEND_HOST'), type=str)
+    parser.add_argument('--frontend_port', dest='frontend_port', help='Frontend Port', default=os.environ.get('FRONTEND_PORT'), type=str)
 
     # Parse the command-line arguments
     args = parser.parse_args()

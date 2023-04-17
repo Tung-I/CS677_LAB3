@@ -89,7 +89,11 @@ class LRUCache:
         with open(self.log_path, 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
 
-    def get(self, key: int) -> int:
+    def get(self, key):
+        """
+        Return:
+            returns -1 if the key is not found
+        """
         if key not in self.items:
             return -1
         else:
@@ -99,7 +103,7 @@ class LRUCache:
                 self.items[key] = self.items.pop(key)
                 return self.items[key]
 
-    def put(self, key: int, item: dict) -> None:
+    def put(self, key, item):
         with self.rwlock.w_locked():
             if key not in self.items:
                 if len(self.items) == self.capacity:
@@ -108,6 +112,18 @@ class LRUCache:
                 # Pop the item before putting it into the cache
                 self.items.pop(key)
             self.items[key] = item
+
+    def pop(self, key):
+        """
+        Return:
+            returns 1 if operation succeeds, -1 if the key is not found
+        """
+        with self.rwlock.w_locked():
+            if key not in self.items:
+                return -1
+            else:
+                self.items.pop(key)
+                return 1
 
     def dump(self):
         with self.rwlock.r_locked():
@@ -197,7 +213,7 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps(response).encode())
 
-            # Dump the log
+            # Dump the log after every lookup request
             self.server.cache.dump()
 
         # Query existing orders
@@ -223,18 +239,30 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 raise RuntimeError("Frontend should check the URL for the order service")
 
-        # The URL of the GET request is invalid -> raise error 400 
+        # Invalidation request from Catalog
+        elif self.path.startswith("/invalidation?stock="):
+            stock_name = self.path.split('=')[-1]
+            result = self.server.cache.pop(stock_name)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write("The item was successfully removed from the cache".encode())
+
+        # The URL of the GET request is invalid -> raise error 404 
         else:
-            self.send_response(400)
+            self.send_response(404)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             response = {
                 "error": {
-                    "code": 400, 
+                    "code": 404, 
                     "message": f"invalid URL: {self.path}"
                 }
             }
             self.wfile.write(json.dumps(response).encode())
+
+
         
 
     # override the default do_POST() method

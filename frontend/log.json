@@ -36,11 +36,6 @@
         }
     },
     "3": {
-        "MSFT": {
-            "name": "Microsoft Corporation",
-            "price": 17.99,
-            "quantity": 100
-        },
         "GOOG": {
             "name": "Alphabet Inc.",
             "price": 16.99,
@@ -49,7 +44,7 @@
         "AAPL": {
             "name": "Apple Inc.",
             "price": 15.99,
-            "quantity": 100
+            "quantity": 110.0
         }
     },
     "4": {
@@ -61,24 +56,24 @@
         "AAPL": {
             "name": "Apple Inc.",
             "price": 15.99,
-            "quantity": 100
+            "quantity": 110.0
         },
         "MSFT": {
             "name": "Microsoft Corporation",
             "price": 17.99,
-            "quantity": 100
+            "quantity": 90.0
         }
     },
     "5": {
         "AAPL": {
             "name": "Apple Inc.",
             "price": 15.99,
-            "quantity": 100
+            "quantity": 110.0
         },
         "MSFT": {
             "name": "Microsoft Corporation",
             "price": 17.99,
-            "quantity": 100
+            "quantity": 90.0
         },
         "GOOG": {
             "name": "Alphabet Inc.",
