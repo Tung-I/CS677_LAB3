@@ -167,5 +167,102 @@
             "price": 16.99,
             "quantity": 0.0
         }
+    },
+    "12": {
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 0.0
+        }
+    },
+    "13": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 0.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 80.0
+        }
+    },
+    "14": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 0.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        }
+    },
+    "15": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 10.0
+        }
+    },
+    "16": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 10.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 70.0
+        }
+    },
+    "17": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 10.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 70.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 0.0
+        }
     }
 }

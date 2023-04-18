@@ -95,7 +95,7 @@ def lookup(
         
 
 
-def background_task(port, server):
+def daemon_worker(port, server):
     # Create the socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', port))
@@ -192,14 +192,55 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
     # Handle POST requests
     def do_POST(self):
-        # Check if the server is currently a leader or not
+        # If this is currently a non-leader server
         if not self.server.is_leader:
-            raise RuntimeError('A non-leader order service should not receive any POST requests!')
+            # If the POST request was sent from the peer
+            if self.path.startswith('/update'):
+                # Parse the request
+                content_length = int(self.headers["Content-Length"])
+                request_body = self.rfile.read(content_length).decode().split('&')  # ex. stock=AAPL, quantity=100, type=sell, number=5
+                stock_name = request_body[0].split('=')[-1]
+                quantity = float(request_body[1].split('=')[-1])
+                order_type = request_body[2].split('=')[-1]
+                order_number = request_body[3].split('=')[-1]
+
+                # Save the new info into the local database
+                self.server.orders.append(
+                    {
+                        "transaction number": int(order_number),
+                        "stock name": stock_name,
+                        "order type": order_type,
+                        "quantity": abs(quantity)
+                    }
+                )
+                # Update the local transaction number
+                self.server.transaction_number = int(order_number) + 1
+                # Sort the order list
+                self.server.orders = sorted(self.server.orders, key=lambda x: x["transaction number"], reverse=False)
+                # Write the new transactions into local database
+                with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
+                    for order in self.server.orders:
+                        writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])
+                
+                # Send the response to the leader first, and then acquire the write lock (to prevent deadlock)
+                self.send_response(200)
+                self.send_header("Content-Disposition", "attachment; filename=order.csv")
+                self.end_headers()
+                response = "Update successfully"
+                self.wfile.write(response.encode())          
+                return
+
+            # If the server is currently not the leader but receive a request from the frontend
+            else:
+                raise RuntimeError('A non-leader order service should not receive any POST requests form the frontend.')
+
 
         # Get the length of the content of the request from the headers
         content_length = int(self.headers["Content-Length"])
         # Read the request content
-        request_body = self.rfile.read(content_length).decode().split('&')  # ex. stock=AAPL&quantity=100&type=sell
+        request_body = self.rfile.read(content_length).decode().split('&')  # ex. stock=AAPL, quantity=100, type=sell
         # Check the validity of URL
         if request_body[0].split('=')[0] != "stock" or request_body[1].split('=')[0] != "quantity" \
             or request_body[2].split('=')[0] != "type":
@@ -251,8 +292,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
             return
 
-        # Use a write lock to ensure only one thread can
-        # check the remaining quantity and place an order at a time 
+        # Use a write lock to ensure only one thread can check the remaining quantity and place an order at a time 
         with self.server.rwlock.w_locked():
             # Call Lookup() in the catalog service so that we can check the stock availability
             url = f'{self.server.catalog_host_url}:{self.server.catalog_port}/lookup?stock={stock_name}'
@@ -314,10 +354,20 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                     }
                     self.wfile.write(json.dumps(response).encode())
 
+                    # Propagate the info to the follower nodes
+                    order_host = os.environ.get('ORDER_HOST')
+                    for port in self.server.peer_request_ports:
+                        try:
+                            # Send an update request to the peer
+                            url = f'http://{order_host}:{port}/update?stock={stock_name}&amp;quantity={-quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
+                            peer_response = requests.post(url, data={"stock": stock_name, "quantity": -quantity, "type": order_type, "number": self.server.transaction_number})
+                        except requests.exceptions.RequestException as e:
+                            continue
+
                     # Increase the transaction number
                     self.server.transaction_number += 1
 
-                # Send an error response to the client if there's not enough remaining quantity
+                # If there's not enough remaining quantity
                 else:
                     self.send_response(400)
                     self.send_header("Content-type", "text/plain")
@@ -366,8 +416,20 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                     writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                     for order in self.server.orders:
                         writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])         
+    
+                # Propagate the info to the follower nodes
+                order_host = os.environ.get('ORDER_HOST')
+                for port in self.server.peer_request_ports:
+                    try:
+                        # Send an update request to the peer
+                        url = f'http://{order_host}:{port}/update?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
+                        peer_response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type, "number": self.server.transaction_number})
+                    except requests.exceptions.RequestException as e:
+                        continue
+
                 # Increase the transaction number
                 self.server.transaction_number += 1
+
 
             # Send an error response to the client if the order type is invalid
             else:
@@ -400,12 +462,15 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         if self.service_id == '3':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
+            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT2')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
         elif self.service_id == '2':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
+            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
         elif self.service_id == '1':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
+            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT2'))]
         else:
             raise RuntimeError("Invalid argument: service id {args.service_id}")
 
@@ -436,7 +501,7 @@ def main(args):
     print(f"Serving on port {request_listening_port}")
 
     # Run a daemon thread to listen to the leader selection result from the frontend
-    t = threading.Thread(target=background_task, daemon=True, args=[socket_listening_port, httpd])
+    t = threading.Thread(target=daemon_worker, daemon=True, args=[socket_listening_port, httpd])
     t.start()
 
     # Start the server and keep it running indefinitely
