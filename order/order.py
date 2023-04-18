@@ -93,6 +93,27 @@ def lookup(
             return -1
         
 
+
+def listen_to_leader_selection(socket_port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', socket_port))
+    s.listen(5)
+    print(f"Socket listening to {socket_port}")
+
+    while True:
+        conn, info = s.accept()
+        data = conn.recv(1024)
+        while data:
+            if data.decode() == 'Ping':
+                conn.send('OK'.encode("ascii"))
+            elif data.decode() == 'You win':
+                print('I am the leader now.')
+            else:
+                print(f'Order ID {data} is the leader now.')
+            data = conn.recv(1024)
+
+
+
 # Define a request handler that inherits from BaseHTTPRequestHandler
 class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
     # Handle the order number query from the frontend 
@@ -371,18 +392,25 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 # Define the main function to start the server
 def main(args):
     # Create a threaded HTTP server with the given port and output directory
-    httpd = ThreadedHTTPServer(("", args.port), OrderRequestHandler, args)
+    httpd = ThreadedHTTPServer(("", args.request_port), OrderRequestHandler, args)
     # Print a message to indicate that the server is serving on the specified port
-    print(f"Serving on port {args.port}")
+    print(f"Serving on port {args.request_port}")
+
+    t = threading.Thread(target=listen_to_leader_selection, daemon=True, args=[args.socket_port])
+    t.start()
+
     # Start the server and keep it running indefinitely
     httpd.serve_forever()
+    # Listen to the leader selection result from the frontend
 
 # Check if the script is being run as the main module
 if __name__ == "__main__":
     # Create an argument parser with options for the port and output directory
     parser = argparse.ArgumentParser(description='Order Server.')
+    # Assign the request listening port
+    parser.add_argument('--request_port', dest='request_port', help='Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
     # Assign the listening port
-    parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
+    parser.add_argument('--socket_port', dest='socket_port', help='Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
     # Assign the directory of orders.csv
     parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)
     # Assign the host and the port of the catalog service 

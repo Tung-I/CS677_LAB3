@@ -8,6 +8,7 @@ from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 import json
 import sys, os
+import select
 
 from contextlib import contextmanager
 from collections import OrderedDict
@@ -138,8 +139,48 @@ class LRUCache:
                 self.timestamp += 1
 
 
+def leader_selection(order_host, order_socket_ports, timeout=0.1):
+    # Try to connect to the order server, starting from the highest id
+    leader_id = None
+    while leader_id is None:
+        for order_id in ['3', '2', '1']:
+
+            port = order_socket_ports[order_id]
+            s = socket.socket()
+
+            try:
+                s.connect((order_host, port))
+                s.send("Ping".encode("ascii"))
+                data = s.recv(1024)
+                if data.decode() == 'OK':
+                    s.send("You win".encode("ascii"))
+                    leader_id = order_id
+                    print(f'Now send requests to Order ID {leader_id}')
+                    break
+            except:
+                continue
+
+                
+    # Notify all the replicas that a leader has been selected
+    for order_id in ['3', '2', '1']:
+        if order_id != leader_id:
+
+            port = order_socket_ports[order_id]
+            s = socket.socket()
+
+            try:
+                s.connect((server.order_host, port))
+                s.send(leader_id.encode("ascii"))
+            except:
+                continue
+
+    return leader_id
+
+
+
 # Define a stock request handler class that handles HTTP GET and POST requests
 class StockRequestHandler(http.server.BaseHTTPRequestHandler):
+            
     # override the default do_GET() method
     def do_GET(self):
         # Handle a GET request.
@@ -216,7 +257,7 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             # Dump the log after every lookup request
             self.server.cache.dump()
 
-        # Query existing orders
+        # Query transaction records
         elif self.path.startswith("/order?order_number"):
             order_number = self.path.split('=')[-1]
             url = f'{self.server.order_host_url}:{self.server.order_port}/order?order_number={order_number}'
@@ -267,6 +308,9 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
 
     # override the default do_POST() method
     def do_POST(self):
+
+
+
         # Handle a POST request.
         if self.path.startswith('/order'):
 
@@ -305,7 +349,7 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                 return
 
 
-            # forward the request to Order using the extracted information
+            # Forward the request to the order server
             url = f'{self.server.order_host_url}:{self.server.order_port}/order?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}'
             response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type})
 
@@ -347,11 +391,14 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     def __init__(self, host_port_tuple, streamhandler, args):
         super().__init__(host_port_tuple, streamhandler)
         self.order_host_url = f'http://{args.order_host}'
-        self.order_port = args.order_port
         self.catalog_host_url = f'http://{args.catalog_host}'
         self.catalog_port = args.catalog_port
         self.protocol_version = 'HTTP/1.1'
         self.cache = LRUCache(args.cache_size, args.log_path)
+        self.order_host = args.order_host
+        self.order_request_ports = {'3': args.order_request_port3, '2': args.order_request_port2, '1': args.order_request_port1}
+        self.order_socket_ports = {'3': args.order_socket_port3, '2': args.order_socket_port2, '1': args.order_socket_port1}
+        self.order_leader_id = None
 
     # Override the server_bind function to enable socket reuse and bind to the server address
     def server_bind(self):
@@ -361,6 +408,10 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 def main(args):
     # Set up the threaded HTTP server with the given port and request handler.
     httpd = ThreadedHTTPServer(("", args.port), StockRequestHandler, args)
+
+    order_leader_id = leader_selection(httpd.order_host, httpd.order_socket_ports)
+    httpd.order_leader_id = order_leader_id
+
     print(f"Serving on port {args.port}")
     # Start serving requests.
     httpd.serve_forever()
@@ -369,16 +420,29 @@ def main(args):
 if __name__ == "__main__":
     # Parse command-line arguments.
     parser = argparse.ArgumentParser(description='Server.')
+
     # Assign the listening port
     parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('FRONTEND_LISTENING_PORT'), type=int)
-    # Assign the host and the port of the order and the catalog services 
+
+    # Assign the host and the port of the order service 
     parser.add_argument('--order_host', dest='order_host', help='Order Host', default=os.environ.get('ORDER_HOST'), type=str)
-    parser.add_argument('--order_port', dest='order_port', help='Order Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
+    parser.add_argument('--order_request_port1', dest='order_request_port1', help='The first request port', default=16006, type=int)
+    parser.add_argument('--order_request_port2', dest='order_request_port2', help='The second request port', default=16007, type=int)
+    parser.add_argument('--order_request_port3', dest='order_request_port3', help='The third request port', default=16008, type=int)
+    parser.add_argument('--order_socket_port1', dest='order_socket_port1', help='The first socket port', default=16016, type=int)
+    parser.add_argument('--order_socket_port2', dest='order_socket_port2', help='The second socket port', default=16017, type=int)
+    parser.add_argument('--order_socket_port3', dest='order_socket_port3', help='The third socket port', default=16018, type=int)
+
+    # Assign the host and the port of the catalog service 
     parser.add_argument('--catalog_host', dest='catalog_host', help='Catalog Host', default=os.environ.get('CATALOG_HOST'), type=str)
     parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_LISTENING_PORT'), type=int)
-    parser.add_argument('--cache_size', dest='cache_size', help='Size of the cache', default=5, type=int)
-    parser.add_argument('--log', dest='log_path', help='Path to the cache log', default="./log.json", type=str)
+
     # Assign the size of the cache
+    parser.add_argument('--cache_size', dest='cache_size', help='Size of the cache', default=5, type=int)
+
+    # Assign the path of the cache log file for debugging 
+    parser.add_argument('--log', dest='log_path', help='Path to the cache log', default="./log.json", type=str)
+    
     args = parser.parse_args()
 
     # Start the server with the given arguments.
