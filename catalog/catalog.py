@@ -9,7 +9,8 @@ from socketserver import ThreadingMixIn
 from contextlib import contextmanager
 from threading  import Lock
 
-############### TO DO
+from dotenv import load_dotenv
+
 
 
 # Define the filename for the catalog JSON file
@@ -313,11 +314,14 @@ def main(args):
 
 
 if __name__ == "__main__":
+    # Load env variables
+    load_dotenv()
+
     # Create an argument parser to read command-line arguments
     parser = argparse.ArgumentParser(description='Server.')
 
     # Add an argument for specifying the port number
-    parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('CATALOG_LISTENING_PORT'), type=int)
+    parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('CATALOG_PORT'), type=int)
 
     # Add an argument for the output directory
     parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)

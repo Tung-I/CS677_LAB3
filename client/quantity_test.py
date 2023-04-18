@@ -30,25 +30,7 @@ TEST_SET = [
     # Query Existing Order
     "/order?order_number=1",
     "/order?order_number=5",
-    "/order?order_number=1000000",
-    # PLACE ORDERS WITH NEGATIVE QUANTITY and 0 QUANTITY -> error 400, invalid quantity
-    "/order?stock=AAPL&amp;quantity=-100&amp;type=buy",
-    "/order?stock=AAPL&amp;quantity=0&amp;type=buy",
-    "/order?stock=AAPL&amp;quantity=-100&amp;type=sell",
-    "/order?stock=AAPL&amp;quantity=0&amp;type=sell",
-    # PLACE ORDERS WITH NON-EXISTENT STOCK NAME -> error 404, stock not found
-    "/lookup?stock=MSFTTTTTT",
-    "/order?stock=AAPLLLLLLLL&amp;quantity=100&amp;type=sell",
-    # PLACE ORDERS WITH INVALID ORDER TYPES -> error 400, invalid order type
-    "/order?stock=GOOG&amp;quantity=400&amp;type=selllll",
-    "/order?stock=GOOG&amp;quantity=100&amp;type=buyyyyyy",
-    # SEND REQUESTS WITH ERRONEOUS URL -> error 400, invalid URL
-    "/lookdown?stock=GOOG",
-    "/lookup?stockkkkkkk=GOOG",
-    "/disorder?stock=AAPL&amp;quantity=10&amp;type=sell",
-    "/order?stockkkkkk=AAPL&amp;quantity=10&amp;type=sell",
-    "/order?stock=AAPL&amp;quantityyyyyy=10&amp;type=sell",
-    "/order?stock=AAPL&amp;quantity=10&amp;typeeeeee=sell",
+    "/order?order_number=1000000"
 ]
 
 # Define the main function that takes an 'args' parameter

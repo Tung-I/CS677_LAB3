@@ -12,6 +12,8 @@ from threading  import Lock
 from socketserver import ThreadingMixIn
 import csv
 
+from dotenv import load_dotenv
+
 
 class RWLock(object):
     """ RWLock class based on https://gist.github.com/tylerneylon/a7ff6017b7a1f9a506cf75aa23eacfd6
@@ -74,7 +76,6 @@ class RWLock(object):
             self.w_release()
 
 
-
 def lookup(
     file_path: str,
     order_number: str,
@@ -94,12 +95,13 @@ def lookup(
         
 
 
-def listen_to_leader_selection(socket_port):
+def background_task(port, server):
+    # Create the socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(('', socket_port))
+    s.bind(('', port))
     s.listen(5)
-    print(f"Socket listening to {socket_port}")
-
+    print(f"Listening to: {port}")
+    # Listen to the message
     while True:
         conn, info = s.accept()
         data = conn.recv(1024)
@@ -108,8 +110,10 @@ def listen_to_leader_selection(socket_port):
                 conn.send('OK'.encode("ascii"))
             elif data.decode() == 'You win':
                 print('I am the leader now.')
+                server.is_leader = True
             else:
-                print(f'Order ID {data} is the leader now.')
+                print(f'Order ID {data.decode()} is the leader now.')
+                server.is_leader = False
             data = conn.recv(1024)
 
 
@@ -117,8 +121,12 @@ def listen_to_leader_selection(socket_port):
 # Define a request handler that inherits from BaseHTTPRequestHandler
 class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
     # Handle the order number query from the frontend 
-    def do_GET(self):   
-        # If the request is for stock lookup
+    def do_GET(self):  
+        # Check if the server is currently a leader or not
+        if not self.server.is_leader:
+            raise RuntimeError('A non-leader order service should not receive any GET requests!')
+
+        # If the lookup request is for transaction records
         if self.path.startswith("/order?order_number"):   
             # Check the validity of URL
             if self.path.split('?')[0] != '/order' or self.path.split('?')[-1].split('=')[0] != 'order_number':
@@ -137,7 +145,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
             order_number = self.path.partition("=")[-1]
 
             # Look up the order number
-            lookup_result = lookup(os.path.join(self.server.out_dir, 'order.csv'), order_number, self.server.rwlock)
+            lookup_result = lookup(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), order_number, self.server.rwlock)
 
             # If the order number is not found, return an error response
             if lookup_result == -1:
@@ -160,7 +168,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                     "data": {
                         "number": order_number,
                         "name": lookup_result[1],
-                        "type": lookup_result[-1],
+                        "type": lookup_result[3],
                         "quantity": lookup_result[2],
                     }
                 }
@@ -184,7 +192,10 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
     # Handle POST requests
     def do_POST(self):
-        # Handle stock order request
+        # Check if the server is currently a leader or not
+        if not self.server.is_leader:
+            raise RuntimeError('A non-leader order service should not receive any POST requests!')
+
         # Get the length of the content of the request from the headers
         content_length = int(self.headers["Content-Length"])
         # Read the request content
@@ -286,7 +297,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         }
                     )
                     # Write the order log into orders.csv
-                    with open(os.path.join(self.server.out_dir, 'order.csv'), mode='w', newline='') as file:
+                    with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
                         writer = csv.writer(file)
                         writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                         for order in self.server.orders:
@@ -350,7 +361,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         "quantity": quantity
                     }
                 )
-                with open(os.path.join(self.server.out_dir, 'order.csv'), mode='w', newline='') as file:
+                with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                     for order in self.server.orders:
@@ -384,6 +395,22 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         self.orders = []
         self.rwlock = RWLock()
         self.protocol_version = 'HTTP/1.1'
+        self.service_id = args.service_id
+        
+        if self.service_id == '3':
+            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
+            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
+        elif self.service_id == '2':
+            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
+            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
+        elif self.service_id == '1':
+            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
+            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
+        else:
+            raise RuntimeError("Invalid argument: service id {args.service_id}")
+
+        self.is_leader = False
+
     # Override the server_bind function to enable socket reuse and bind to the server address
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -391,33 +418,44 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # Define the main function to start the server
 def main(args):
-    # Create a threaded HTTP server with the given port and output directory
-    httpd = ThreadedHTTPServer(("", args.request_port), OrderRequestHandler, args)
-    # Print a message to indicate that the server is serving on the specified port
-    print(f"Serving on port {args.request_port}")
+    if args.service_id == '3':
+        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
+        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
+    elif args.service_id == '2':
+        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
+        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
+    elif args.service_id == '1':
+        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
+        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
+    else:
+        raise RuntimeError("Invalid argument: service id {args.service_id}")
 
-    t = threading.Thread(target=listen_to_leader_selection, daemon=True, args=[args.socket_port])
+    # Create a threaded HTTP server with the given port and output directory
+    httpd = ThreadedHTTPServer(("", request_listening_port), OrderRequestHandler, args)
+    # Print a message to indicate that the server is serving on the specified port
+    print(f"Serving on port {request_listening_port}")
+
+    # Run a daemon thread to listen to the leader selection result from the frontend
+    t = threading.Thread(target=background_task, daemon=True, args=[socket_listening_port, httpd])
     t.start()
 
     # Start the server and keep it running indefinitely
     httpd.serve_forever()
-    # Listen to the leader selection result from the frontend
 
 # Check if the script is being run as the main module
 if __name__ == "__main__":
+    # Load env variables
+    load_dotenv()
+
     # Create an argument parser with options for the port and output directory
     parser = argparse.ArgumentParser(description='Order Server.')
-    # Assign the request listening port
-    parser.add_argument('--request_port', dest='request_port', help='Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
-    # Assign the listening port
-    parser.add_argument('--socket_port', dest='socket_port', help='Port', default=os.environ.get('ORDER_LISTENING_PORT'), type=int)
+    # Assign the ID
+    parser.add_argument('--id', dest='service_id', help='Service ID', type=str)
     # Assign the directory of orders.csv
     parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)
     # Assign the host and the port of the catalog service 
     parser.add_argument('--catalog_host', dest='catalog_host', help='Catalog Host', default=os.environ.get('CATALOG_HOST'), type=str)
-    parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_LISTENING_PORT'), type=str)
+    parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_PORT'), type=str)
     
     args = parser.parse_args()
-
-
     main(args)
