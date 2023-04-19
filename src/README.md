@@ -32,21 +32,26 @@ python frontend.py --cache_size 3 --log ./log.json
 1. Send the first set of testing requests
 ```shell
 cd src/client
-python frontend.py --cache_size 3 --log ./log.json
+python quantity_test.py
 ```
-2. Ctrl+C, shutdown the highest ID order server 
-3. Send the second set of testing requests
+Whenever there is a lookup request, the items inside the cache will be dump to /frontend/log.json, which can be used for part1 debugging.
+
+2. Ctrl+C, shutdown the order server with the highest ID 
+
+3. Send the testing requests again
 ```shell
-python frontend.py --cache_size 3 --log ./log.json
+python quantity_test.py
 ```
-The order server with second highest ID will become the leader, and records in order3.csv is lagging behind.
+The order server with second highest ID will become the leader, and it can be seen that order3.csv is lagging behind.
+
 4. Restart the order server with the highest ID
 ```shell
 cd src/order
 python order.py --id 3 --out_dir ./data --resume
 ```
-3. Send the third set of testing requests
+
+5. Send the testing requests again
 ```shell
-python frontend.py --cache_size 3 --log ./log.json
+python quantity_test.py
 ```
-Now the database of each replica is up-to-date
+Check each replica's database. All of them should be up-to-date.
