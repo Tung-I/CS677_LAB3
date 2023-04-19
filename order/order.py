@@ -16,25 +16,11 @@ from dotenv import load_dotenv
 
 
 class RWLock(object):
-    """ RWLock class based on https://gist.github.com/tylerneylon/a7ff6017b7a1f9a506cf75aa23eacfd6
-        Usage:
-            my_obj_rwlock = RWLock()
-
-            # When reading from my_obj:
-            with my_obj_rwlock.r_locked():
-                do_read_only_things_with(my_obj)
-
-            # When writing to my_obj:
-            with my_obj_rwlock.w_locked():
-                mutate(my_obj)
-    """
     def __init__(self):
         self.w_lock = Lock()
         self.num_r_lock = Lock()
         self.num_r = 0
 
-    # ___________________________________________________________________
-    # Reading methods.
     def r_acquire(self):
         self.num_r_lock.acquire()
         self.num_r += 1
@@ -58,9 +44,6 @@ class RWLock(object):
         finally:
             self.r_release()
 
-    # ___________________________________________________________________
-    # Writing methods.
-
     def w_acquire(self):
         self.w_lock.acquire()
 
@@ -76,14 +59,10 @@ class RWLock(object):
             self.w_release()
 
 
-def lookup(
-    file_path: str,
-    order_number: str,
-    rwlock: RWLock
-    ):
+def lookup( file_path: str, order_number: str, rwlock: RWLock):
     """
     Return:
-        returns the corresponding order details, or -1 if the number doesn't exist.
+        returns the corresponding order record, -1 if the order number doesn't exist.
     """
     with rwlock.r_locked():
         with open(file_path, newline='') as f:
@@ -96,6 +75,10 @@ def lookup(
 
 
 def daemon_worker(port, server):
+    """
+    For the daemon thread running in the background.
+    It update the leader information whenever receiving the notification from the frontend.
+    """
     # Create the socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', port))
@@ -106,27 +89,27 @@ def daemon_worker(port, server):
         conn, info = s.accept()
         data = conn.recv(1024)
         while data:
+            # Ping from the frontend
             if data.decode() == 'Ping':
+                # Send OK mmessage back
                 conn.send('OK'.encode("ascii"))
+            # Be nominated as the leader
             elif data.decode() == 'You win':
                 print('I am the leader now.')
-                server.is_leader = True
+                server.current_leader_id = server.service_id
+            # Be aware of who's the leader
             else:
                 print(f'Order ID {data.decode()} is the leader now.')
-                server.is_leader = False
+                server.current_leader_id = data.decode()
+            # Block for the next message
             data = conn.recv(1024)
-
 
 
 # Define a request handler that inherits from BaseHTTPRequestHandler
 class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
-    # Handle the order number query from the frontend 
-    def do_GET(self):  
-        # Check if the server is currently a leader or not
-        if not self.server.is_leader:
-            raise RuntimeError('A non-leader order service should not receive any GET requests!')
 
-        # If the lookup request is for transaction records
+    def do_GET(self):  
+        # The query of order records
         if self.path.startswith("/order?order_number"):   
             # Check the validity of URL
             if self.path.split('?')[0] != '/order' or self.path.split('?')[-1].split('=')[0] != 'order_number':
@@ -142,9 +125,8 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
 
-            order_number = self.path.partition("=")[-1]
-
             # Look up the order number
+            order_number = self.path.partition("=")[-1]
             lookup_result = lookup(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), order_number, self.server.rwlock)
 
             # If the order number is not found, return an error response
@@ -159,7 +141,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                     }
                 }
 
-            # If the order_number is found, return the data as a response
+            # Otherwise, return the record as a response
             else:
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
@@ -175,7 +157,15 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
             self.wfile.write(json.dumps(response).encode())
         
-        # If the URL does not start with "/order?order_number"
+        # Request of the current transaction number from other replicas
+        elif self.path.startswith("/synchronization"):   
+            response = str(self.server.transaction_number)
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(response.encode())
+
+        # Invalid URL format
         else:
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
@@ -189,13 +179,11 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
 
 
-
-    # Handle POST requests
     def do_POST(self):
-        # If this is currently a non-leader server
-        if not self.server.is_leader:
-            # If the POST request was sent from the peer
-            if self.path.startswith('/update'):
+        # If this is a non-leader server
+        if self.server.current_leader_id != self.server.service_id:
+            # Information propagation for the most recent trading record
+            if self.path.startswith('/propagate'):
                 # Parse the request
                 content_length = int(self.headers["Content-Length"])
                 request_body = self.rfile.read(content_length).decode().split('&')  # ex. stock=AAPL, quantity=100, type=sell, number=5
@@ -213,33 +201,30 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         "quantity": abs(quantity)
                     }
                 )
-                # Update the local transaction number
                 self.server.transaction_number = int(order_number) + 1
-                # Sort the order list
+                # Sort the list of order records
                 self.server.orders = sorted(self.server.orders, key=lambda x: x["transaction number"], reverse=False)
-                # Write the new transactions into local database
-                with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
+                # Write the file
+                with open(self.server.local_data_path, mode='w', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                     for order in self.server.orders:
                         writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])
-                
-                # Send the response to the leader first, and then acquire the write lock (to prevent deadlock)
+                # Send the response to the leader
                 self.send_response(200)
                 self.send_header("Content-Disposition", "attachment; filename=order.csv")
                 self.end_headers()
-                response = "Update successfully"
+                response = "Information update successfully"
                 self.wfile.write(response.encode())          
                 return
 
-            # If the server is currently not the leader but receive a request from the frontend
+            # Unknown URL received by a non-leader order service
             else:
-                raise RuntimeError('A non-leader order service should not receive any POST requests form the frontend.')
+                raise RuntimeError(f'Unknown URL received by a non-leader order service: {self.path}')
 
 
-        # Get the length of the content of the request from the headers
-        content_length = int(self.headers["Content-Length"])
+        # If this is a leader server
         # Read the request content
+        content_length = int(self.headers["Content-Length"])
         request_body = self.rfile.read(content_length).decode().split('&')  # ex. stock=AAPL, quantity=100, type=sell
         # Check the validity of URL
         if request_body[0].split('=')[0] != "stock" or request_body[1].split('=')[0] != "quantity" \
@@ -337,9 +322,8 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         }
                     )
                     # Write the order log into orders.csv
-                    with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
+                    with open(self.server.local_data_path, mode='w', newline='') as file:
                         writer = csv.writer(file)
-                        writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                         for order in self.server.orders:
                             writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])
 
@@ -355,11 +339,10 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                     self.wfile.write(json.dumps(response).encode())
 
                     # Propagate the info to the follower nodes
-                    order_host = os.environ.get('ORDER_HOST')
                     for port in self.server.peer_request_ports:
                         try:
                             # Send an update request to the peer
-                            url = f'http://{order_host}:{port}/update?stock={stock_name}&amp;quantity={-quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
+                            url = f'http://{self.server.order_host}:{port}/propagate?stock={stock_name}&amp;quantity={-quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
                             peer_response = requests.post(url, data={"stock": stock_name, "quantity": -quantity, "type": order_type, "number": self.server.transaction_number})
                         except requests.exceptions.RequestException as e:
                             continue
@@ -411,18 +394,16 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         "quantity": quantity
                     }
                 )
-                with open(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), mode='w', newline='') as file:
+                with open(self.server.local_data_path, mode='w', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow(['transaction number', 'stock name', 'quantity', 'order type'])
                     for order in self.server.orders:
                         writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])         
     
                 # Propagate the info to the follower nodes
-                order_host = os.environ.get('ORDER_HOST')
                 for port in self.server.peer_request_ports:
                     try:
                         # Send an update request to the peer
-                        url = f'http://{order_host}:{port}/update?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
+                        url = f'http://{self.server.order_host}:{port}/propagate?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
                         peer_response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type, "number": self.server.transaction_number})
                     except requests.exceptions.RequestException as e:
                         continue
@@ -449,37 +430,122 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     # Override the init function to save metadata in the server
     def __init__(self, host_port_tuple, streamhandler, args):
         super().__init__(host_port_tuple, streamhandler)
-        # Set the output directory and initialize the transaction number and orders
-        self.out_dir = args.out_dir
-        self.catalog_host_url = f'http://{args.catalog_host}'
-        self.catalog_port = args.catalog_port
+        self.protocol_version = 'HTTP/1.1'
+        # Order records
         self.transaction_number = 0
         self.orders = []
+        # Read-write lock
         self.rwlock = RWLock()
-        self.protocol_version = 'HTTP/1.1'
+        # Leader node information
+        self.current_leader_id = None
         self.service_id = args.service_id
-        
+        # Path to the database file
+        self.out_dir = args.out_dir
+        self.local_data_path = os.path.join(self.out_dir, f'order{self.service_id}.csv')
+        # Port and Host information
+        self.catalog_host_url = f'http://{args.catalog_host}'
+        self.catalog_port = args.catalog_port
+        self.order_host = os.environ.get('ORDER_HOST')
         if self.service_id == '3':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
             self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT2')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
+            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT2')), int(os.environ.get('ORDER_SOCKET_PORT1'))]
         elif self.service_id == '2':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
             self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
+            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT3')), int(os.environ.get('ORDER_SOCKET_PORT1'))]
         elif self.service_id == '1':
             self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
             self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
             self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT2'))]
+            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT3')), int(os.environ.get('ORDER_SOCKET_PORT2'))]
         else:
             raise RuntimeError("Invalid argument: service id {args.service_id}")
+        # Run from scratch or resume from a crash
+        if args.resume:
+            self.resume()
+        else:
+            with open(self.local_data_path, mode='w', newline='') as file:
+                pass
 
-        self.is_leader = False
+
 
     # Override the server_bind function to enable socket reuse and bind to the server address
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.server_address)
+
+    # Resume after a crash
+    def resume(self):
+        # Look at the local database and get the latest transaction number before crash
+        self.orders = []
+        with self.rwlock.r_locked():
+            with open(self.local_data_path, newline='') as f:
+                csv_reader = csv.reader(f)
+                for row in csv_reader:
+                    # Recover the memory
+                    if len(row) == 0:
+                        continue
+                    self.orders.append(
+                        {
+                            "transaction number": int(row[0]),
+                            "stock name": row[1],
+                            "order type": row[3],
+                            "quantity": row[2]
+                        }
+                    )
+            # Recover the local order number
+            if len(self.orders) != 0:
+                self.transaction_number = self.orders[-1]["transaction number"] + 1
+            else:
+                self.transaction_number = 0
+
+        # Find the latest order number from the other replicas
+        for port in self.peer_request_ports:
+            response = None
+            url = f'http://{self.order_host}:{port}/synchronization'
+            try:
+                response = requests.get(url)
+            except requests.exceptions.RequestException as e:
+                continue
+            latest_order_number = int(response.content.decode())
+            
+            # If an update is needed
+            print(latest_order_number, self.transaction_number)
+            if latest_order_number > self.transaction_number:
+                # Start scynchronization
+                for order_number_to_ask in range(self.transaction_number, latest_order_number):
+                    # Try to send a request to the replica 
+                    try:
+                        url = f'http://{self.order_host}:{port}/order?order_number={order_number_to_ask}'
+                        response = requests.get(url)
+                        # If the order number is found successfully
+                        if response.status_code == 200:
+                            response_content = json.loads(response.content.decode())
+                            self.orders.append(
+                                {
+                                    "transaction number": order_number_to_ask,
+                                    "stock name": response_content['data']["name"],
+                                    "order type": response_content['data']["type"],
+                                    "quantity": response_content['data']["quantity"],
+                                }
+                            )
+                        # Order number not found
+                        else:
+                            continue
+                    # If connection error
+                    except requests.exceptions.RequestException as e:
+                        continue    
+                self.transaction_number = latest_order_number
+                # Write the updated memory into the local file
+                # This function is called before the server starts serving, so a write lock is unnecessary
+                with open(self.local_data_path, mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    for order in self.orders:
+                        writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])
+
 
 # Define the main function to start the server
 def main(args):
@@ -521,6 +587,8 @@ if __name__ == "__main__":
     # Assign the host and the port of the catalog service 
     parser.add_argument('--catalog_host', dest='catalog_host', help='Catalog Host', default=os.environ.get('CATALOG_HOST'), type=str)
     parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_PORT'), type=str)
+    # Restart or Resume
+    parser.add_argument('--resume', dest='resume', help='Resume from the last order record', default=False, action='store_true')
     
     args = parser.parse_args()
     main(args)

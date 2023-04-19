@@ -265,7 +265,6 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith("/order?order_number"):
             order_number = self.path.split('=')[-1]
 
-
             # Forward the request to the order server
             response = None
             while response == None: 
