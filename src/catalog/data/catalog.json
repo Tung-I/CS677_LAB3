@@ -2,8 +2,8 @@
     "AAPL": {
         "name": "Apple Inc.",
         "price": 15.99,
-        "remaining_quantity": 80.0,
-        "accumulated_volume": 220.0
+        "remaining_quantity": 10.0,
+        "accumulated_volume": 150.0
     },
     "GOOG": {
         "name": "Alphabet Inc.",
@@ -14,8 +14,8 @@
     "MSFT": {
         "name": "Microsoft Corporation",
         "price": 17.99,
-        "remaining_quantity": 0.0,
-        "accumulated_volume": 100.0
+        "remaining_quantity": 70.0,
+        "accumulated_volume": 30.0
     },
     "SPX": {
         "name": "S&P 500 Index",

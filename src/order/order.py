@@ -513,7 +513,6 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
             latest_order_number = int(response.content.decode())
             
             # If an update is needed
-            print(latest_order_number, self.transaction_number)
             if latest_order_number > self.transaction_number:
                 # Start scynchronization
                 for order_number_to_ask in range(self.transaction_number, latest_order_number):
