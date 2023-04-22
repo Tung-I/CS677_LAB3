@@ -7,67 +7,87 @@ import random
 import time
 
 
-# Stock choices
-STOCK_NAME_LIST = ["AAPL", "GOOG", "MSFT", "MSFTT"]
+STOCK_NAMES = ["AAPL", "GOOG", "MSFT", "SPX", "OEX", "DJX", "NDX", "CPQ", "INTC", "IBM"]
 
 # Define the main function that takes an 'args' parameter
 def main(args):
-    # Extract the 'host', 'port', and 'prob (probablity)' parameters from 'args'
+    # Extract the parameters from 'args'
     host = args.host
     port = args.port
-    prob = args.prob
+    order_prob = args.prob
+    base_url = f'http://{host}:{port}'
+    n_request = args.n_request
+    seed = args.seed
 
-    # Fix the random seed for debugging
-    random.seed(1)
+    # List for saving the information of each successful order
+    order_records = []
 
-    # Make several requests to the same host and reuse the underlying HTTP connection
+    # Make several requests to the same host and reuse the underlying TCP connection
     s = requests.Session()
-    
-    for i in range(10000):
-        time.sleep(0.2)
-        # Randomly choose a stock from the list
-        chosen_stock = random.choice(STOCK_NAME_LIST)
-        print(chosen_stock)
-        # Define the url of http requests 
-        base_url = f'http://{host}:{port}'
-        url = f'{base_url}/lookup?stock={chosen_stock}'     
+
+    # Request
+    for n in range(n_request):
+        # Set a random seed for reproducibility
+        random.seed(seed + n)
+        # Choose a random stock
+        stock_name = random.choice(STOCK_NAMES)
         # Send a GET request to the URL and print the response content
+        url = f'{base_url}/lookup?stock={stock_name}'     
         response = s.get(url)
         print(response.content.decode())
-      
-        # Send the next request if Lookup() fails
-        if response.status_code != 200:
-            continue
 
-        # If the returned quantity is greater than zero
-        if float(response.json()["data"]["quantity"]) > 0:
-            # With probability args.prob, place a "buy" request 
-            if prob >= random.uniform(0., 1.):
-                print("Additional trading request:")
-                order_type = 'buy'
-                quantity = 200
-                url = f'{base_url}/order?stock={chosen_stock}&amp;quantity={quantity}&amp;type={order_type}'
-                # Send a POST request to the URL with the order data, and print the response content
-                response = s.post(url, data={"name": chosen_stock, "quantity": quantity, "order_type": order_type})
-                print(response.content.decode())
-
-        # With probability 0.1, place a "sell" request
-        if 0.1 >= random.uniform(0., 1.):
-            order_type = 'sell'
-            quantity = 100
-            url = f'{base_url}/order?stock={chosen_stock}&amp;quantity={quantity}&amp;type={order_type}'
+        # With probability P, send an additional order request
+        if order_prob >= random.uniform(0., 1.):
+            order_type = random.choice(['buy', 'sell'])
+            if order_type == 'buy':
+                quantity = 20
+            else:
+                quantity = 10
             # Send a POST request to the URL with the order data, and print the response content
-            response = s.post(url, data={"name": chosen_stock, "quantity": quantity, "order_type": order_type})
+            url = f'{base_url}/order?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}'
+            response = s.post(url, data={"name": stock_name, "quantity": quantity, "order_type": order_type})
             print(response.content.decode())
+
+            # Record the order information if a trade request was successful
+            if response.status_code == 200:
+                number = json.loads(response.content.decode())["data"]["transaction_number"]
+                order_record = {
+                    "data": {
+                        "number": str(number),
+                        "name": stock_name,
+                        "type": order_type,
+                        "quantity": float(quantity),
+                    }
+                }
+                order_records.append(order_record)
+    
+    # Before exiting, retrieve the order info and check if the server reply matches the locally stored data
+    for order_record in order_records:
+        order_record = order_record["data"]
+        order_number  = order_record["number"]
+        url = f"{base_url}/order?order_number={order_number}"
+        response = s.get(url)
+        # If the order number does not exist in the erver
+        if response.status_code != 200:
+            print(f"Order record does not exist: {order_record}")
+        # Read the reply and see if the reply matches with the locally stored data
+        order_info_from_server = json.loads(response.content.decode())["data"]
+        if order_info_from_server["name"] == order_record["name"] and order_info_from_server["type"] == order_record["type"] \
+            and float(order_info_from_server["quantity"]) == float(order_record["quantity"]):
+            pass
+        else:
+            print(f"Order records inconsistent. Local:{order_record}, Remote:{order_info_from_server}")
 
 
 if __name__ == "__main__":
     # Create an argument parser
     parser = argparse.ArgumentParser(description='Client.')
-    # Add arguments for the port, host, and probability
-    parser.add_argument('--port', dest='port', help='Port', default=8080, type=int)
-    parser.add_argument('--host', dest='host', help='Host', default='127.0.0.1', type=str)
-    parser.add_argument('--prob', dest='prob', help='probability of sending the order request', default=0.5, type=float)
+    # Add arguments 
+    parser.add_argument('--port', dest='port', help='Port of front-end', default=8080, type=int)
+    parser.add_argument('--host', dest='host', help='Host of front-end', default='0.0.0.0', type=str)
+    parser.add_argument('--prob', dest='prob', help='Probability', default=0.5, type=float)
+    parser.add_argument('--seed', dest='seed', help='Random seed', default=0, type=int)
+    parser.add_argument('--n_request', dest='n_request', help='Number of the sequential requests', default=20, type=int)
 
     # Parse the arguments and store them in a variable called 'args'
     args = parser.parse_args()

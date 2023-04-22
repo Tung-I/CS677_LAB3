@@ -261,11 +261,13 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             # Dump the log after every lookup request
             self.server.cache.dump()
 
-        # Query transaction records
+        # Query existing orders
         elif self.path.startswith("/order?order_number"):
             order_number = self.path.split('=')[-1]
 
             # Forward the request to the order server
+            # The leader order server could be dead, so a try-except section is used to capture the connection error
+            # If there is no response from the server, redo the leader selection and then send the request again 
             response = None
             while response == None: 
                 try:
@@ -276,6 +278,7 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                     print(f'An request exception occurs: {e}. Re-select a leader.')
                     order_leader_id = leader_selection(self.server.order_host, self.server.order_socket_ports)
                     self.server.order_leader_id = order_leader_id
+                    
 
             # If the order number exists
             if response.status_code == 200:
