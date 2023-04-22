@@ -304,6 +304,17 @@ def main(args):
     if args.config_path:
         with open(args.config_path, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
+    # Use env variables
+    else:
+        config = {}
+        config["CATALOG_HOST"] = os.environ.get("CATALOG_HOST")
+        config["CATALOG_PORT"] = int(os.environ.get("CATALOG_PORT"))
+
+        config["FRONTEND_HOST"] = os.environ.get("FRONTEND_HOST")
+        config["FRONTEND_PORT"] = int(os.environ.get("FRONTEND_PORT"))
+
+        config["OUTPUT_DIR"] = os.environ.get("OUTPUT_DIR")
+
     
     # Create a threaded HTTP server that listens on the specified port and handles requests with the CatalogRequestHandler class
     httpd = ThreadedHTTPServer(("", config['CATALOG_PORT']), CatalogRequestHandler, config)

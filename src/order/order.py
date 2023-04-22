@@ -549,6 +549,32 @@ def main(args):
     if args.config_path:
         with open(args.config_path, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
+    # Use env variables
+    else:
+        config = {}
+        config["CATALOG_HOST"] = os.environ.get("CATALOG_HOST")
+        config["CATALOG_PORT"] = int(os.environ.get("CATALOG_PORT"))
+
+        config["ORDER_HOST3"] = os.environ.get("ORDER_HOST3")
+        config["ORDER_PORT3"] = int(os.environ.get("ORDER_PORT3"))
+        config["ORDER_LEADER_BROADCAST_PORT3"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT3"))
+        config["ORDER_HEALTH_CHECK_PORT3"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT3"))
+
+        config["ORDER_HOST2"] = os.environ.get("ORDER_HOST2")
+        config["ORDER_PORT2"] = int(os.environ.get("ORDER_PORT2"))
+        config["ORDER_LEADER_BROADCAST_PORT2"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT2"))
+        config["ORDER_HEALTH_CHECK_PORT2"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT2"))
+
+        config["ORDER_HOST1"] = os.environ.get("ORDER_HOST1")
+        config["ORDER_PORT1"] = int(os.environ.get("ORDER_PORT1"))
+        config["ORDER_LEADER_BROADCAST_PORT1"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT1"))
+        config["ORDER_HEALTH_CHECK_PORT1"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT1"))
+
+        config["FRONTEND_HOST"] = os.environ.get("FRONTEND_HOST")
+        config["FRONTEND_PORT"] = int(os.environ.get("FRONTEND_PORT"))
+
+        config["OUTPUT_DIR"] = os.environ.get("OUTPUT_DIR")
+
     # Add additional variables to config
     config["RESUME"] = args.resume
     config["ID"] = args.id   

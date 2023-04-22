@@ -1,0 +1,12 @@
+FROM python:3.8-alpine
+
+RUN pip install requests
+RUN pip install pyyaml
+
+WORKDIR /
+
+COPY ./src/order /src/order
+
+ENV PYTHONPATH /
+
+ENTRYPOINT ["python", "-u" ,"./src/order/order.py", "--id", "1"]

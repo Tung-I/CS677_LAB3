@@ -438,7 +438,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         super().__init__(host_port_tuple, streamhandler)
         self.protocol_version = 'HTTP/1.1'
         # Initialize cache
-        self.cache = LRUCache(config["CACHE_SIZE"], config["LOG_PATH"])
+        self.cache = LRUCache(config["CACHE_SIZE"], config["CACHE_LOG_PATH"])
         # Order request address
         self.order_request_addrs = {
             '3': (config["ORDER_HOST3"], config["ORDER_PORT3"]),
@@ -472,15 +472,43 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 def main(args):
     # Creat a config object
+    # Load a config file
     if args.config_path:
         with open(args.config_path, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-    # Add additional variables to config
-    config["CACHE_SIZE"] = args.cache_size
-    config["LOG_PATH"] = args.log_path
+    # Use env variables
+    else:
+        config = {}
+        config["CATALOG_HOST"] = os.environ.get("CATALOG_HOST")
+        config["CATALOG_PORT"] = int(os.environ.get("CATALOG_PORT"))
+
+        config["ORDER_HOST3"] = os.environ.get("ORDER_HOST3")
+        config["ORDER_PORT3"] = int(os.environ.get("ORDER_PORT3"))
+        config["ORDER_LEADER_BROADCAST_PORT3"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT3"))
+        config["ORDER_HEALTH_CHECK_PORT3"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT3"))
+
+        config["ORDER_HOST2"] = os.environ.get("ORDER_HOST2")
+        config["ORDER_PORT2"] = int(os.environ.get("ORDER_PORT2"))
+        config["ORDER_LEADER_BROADCAST_PORT2"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT2"))
+        config["ORDER_HEALTH_CHECK_PORT2"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT2"))
+
+        config["ORDER_HOST1"] = os.environ.get("ORDER_HOST1")
+        config["ORDER_PORT1"] = int(os.environ.get("ORDER_PORT1"))
+        config["ORDER_LEADER_BROADCAST_PORT1"] = int(os.environ.get("ORDER_LEADER_BROADCAST_PORT1"))
+        config["ORDER_HEALTH_CHECK_PORT1"] = int(os.environ.get("ORDER_HEALTH_CHECK_PORT1"))
+
+        config["FRONTEND_HOST"] = os.environ.get("FRONTEND_HOST")
+        config["FRONTEND_PORT"] = int(os.environ.get("FRONTEND_PORT"))
+
+        config["OUTPUT_DIR"] = os.environ.get("OUTPUT_DIR")
+        config["HEALTH_CHECK_INTERVAL"] = os.environ.get("HEALTH_CHECK_INTERVAL")
+        config["CACHE_SIZE"] = os.environ.get("CACHE_SIZE")
+        config["CACHE_LOG_PATH"] = os.environ.get("CACHE_LOG_PATH")
+
 
     # Set up the threaded HTTP server with the given port and request handler.
     httpd = ThreadedHTTPServer(("", config['FRONTEND_PORT']), StockRequestHandler, config)
+    
     # Select the leader order service
     leader_selection(httpd)
     print(f"Serving on port {config['FRONTEND_PORT']}")
@@ -497,12 +525,7 @@ if __name__ == "__main__":
     # Parse command-line arguments.
     parser = argparse.ArgumentParser(description='Server.')
      # Load variables from config.yaml
-    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
-
-    # Assign the size and log path of the cache
-    parser.add_argument('--cache_size', dest='cache_size', help='Size of the cache', default=5, type=int)
-    parser.add_argument('--log', dest='log_path', help='Path to the cache log', default="./log.json", type=str)
-    
+    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)    
     args = parser.parse_args()
 
     # Start the server with the given arguments.

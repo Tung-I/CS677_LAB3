@@ -1,0 +1,10 @@
+FROM python:3.8-alpine
+
+RUN pip install requests
+RUN pip install pyyaml
+
+WORKDIR /
+
+COPY ./src/catalog /src/catalog
+
+ENTRYPOINT ["python", "-u", "../src/catalog/catalog.py"]

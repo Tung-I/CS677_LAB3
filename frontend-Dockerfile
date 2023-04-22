@@ -1,0 +1,12 @@
+FROM python:3.8-alpine
+
+RUN pip install requests
+RUN pip install pyyaml
+
+WORKDIR /
+
+COPY ./src/frontend /src/frontend
+
+ENV PYTHONPATH /
+
+ENTRYPOINT ["python", "-u" ,"./src/frontend/frontend.py"]

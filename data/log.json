@@ -1,0 +1,2547 @@
+{
+    "0": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        }
+    },
+    "1": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        }
+    },
+    "2": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100
+        }
+    },
+    "3": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100
+        }
+    },
+    "4": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100
+        }
+    },
+    "5": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 100
+        }
+    },
+    "6": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 110.0
+        }
+    },
+    "7": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        }
+    },
+    "8": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 110.0
+        }
+    },
+    "9": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 100
+        }
+    },
+    "10": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 110.0
+        }
+    },
+    "11": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 100
+        }
+    },
+    "12": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 100
+        }
+    },
+    "13": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 100
+        }
+    },
+    "14": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    },
+    "15": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 120.0
+        }
+    },
+    "16": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100
+        }
+    },
+    "17": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100
+        }
+    },
+    "18": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100
+        }
+    },
+    "19": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        }
+    },
+    "20": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 110.0
+        }
+    },
+    "21": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 90.0
+        }
+    },
+    "22": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        }
+    },
+    "23": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        }
+    },
+    "24": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        }
+    },
+    "25": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        }
+    },
+    "26": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        }
+    },
+    "27": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "28": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    },
+    "29": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        }
+    },
+    "30": {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 120.0
+        }
+    },
+    "31": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 120.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 110.0
+        }
+    },
+    "32": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 120.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    },
+    "33": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 120.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 120.0
+        }
+    },
+    "34": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 120.0
+        }
+    },
+    "35": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        }
+    },
+    "36": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 110.0
+        }
+    },
+    "37": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 100.0
+        }
+    },
+    "38": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 100
+        }
+    },
+    "39": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        }
+    },
+    "40": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "41": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 80.0
+        }
+    },
+    "42": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 100
+        }
+    },
+    "43": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 120.0
+        }
+    },
+    "44": {
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        }
+    },
+    "45": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        }
+    },
+    "46": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 110.0
+        }
+    },
+    "47": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 90.0
+        }
+    },
+    "48": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 80.0
+        }
+    },
+    "49": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 90.0
+        }
+    },
+    "50": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "51": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        }
+    },
+    "52": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 90.0
+        }
+    },
+    "53": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        }
+    },
+    "54": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 110.0
+        }
+    },
+    "55": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        }
+    },
+    "56": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 90.0
+        }
+    },
+    "57": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 100.0
+        }
+    },
+    "58": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 80.0
+        }
+    },
+    "59": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 80.0
+        }
+    },
+    "60": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 100.0
+        }
+    },
+    "61": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "62": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 60.0
+        }
+    },
+    "63": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 90.0
+        }
+    },
+    "64": {
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 100.0
+        }
+    },
+    "65": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 60.0
+        }
+    },
+    "66": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        }
+    },
+    "67": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 50.0
+        }
+    },
+    "68": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "69": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 80.0
+        }
+    },
+    "70": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 60.0
+        }
+    },
+    "71": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        }
+    },
+    "72": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        }
+    },
+    "73": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        }
+    },
+    "74": {
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        }
+    },
+    "75": {
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "76": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 100.0
+        }
+    },
+    "77": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 90.0
+        }
+    },
+    "78": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 90.0
+        }
+    },
+    "79": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 120.0
+        }
+    },
+    "80": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 70.0
+        }
+    },
+    "81": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        }
+    },
+    "82": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        }
+    },
+    "83": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "84": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        }
+    },
+    "85": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        }
+    },
+    "86": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        }
+    },
+    "87": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        }
+    },
+    "88": {
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        }
+    },
+    "89": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        }
+    },
+    "90": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        }
+    },
+    "91": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        }
+    },
+    "92": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        }
+    },
+    "93": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        }
+    },
+    "94": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 100.0
+        }
+    },
+    "95": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        }
+    },
+    "96": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 110.0
+        }
+    },
+    "97": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        },
+        "SPX": {
+            "name": "S&P 500 Index",
+            "price": 10.99,
+            "quantity": 100.0
+        }
+    },
+    "98": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 120.0
+        }
+    },
+    "99": {
+        "IBM": {
+            "name": "International Business Machines Corp",
+            "price": 21.99,
+            "quantity": 40.0
+        },
+        "OEX": {
+            "name": "S&P 100 Index",
+            "price": 11.99,
+            "quantity": 80.0
+        },
+        "AAPL": {
+            "name": "Apple Inc.",
+            "price": 15.99,
+            "quantity": 60.0
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "price": 17.99,
+            "quantity": 100.0
+        },
+        "GOOG": {
+            "name": "Alphabet Inc.",
+            "price": 16.99,
+            "quantity": 70.0
+        },
+        "CPQ": {
+            "name": "Compaq Computer Corp",
+            "price": 14.99,
+            "quantity": 110.0
+        },
+        "INTC": {
+            "name": "Intel Corp",
+            "price": 9.99,
+            "quantity": 110.0
+        },
+        "DJX": {
+            "name": "Dow Jones Industrial Average",
+            "price": 12.99,
+            "quantity": 120.0
+        },
+        "NDX": {
+            "name": "NASDAQ 100 Stick Index",
+            "price": 13.99,
+            "quantity": 40.0
+        }
+    }
+}
