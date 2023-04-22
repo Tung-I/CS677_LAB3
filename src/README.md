@@ -1,6 +1,7 @@
 ## Environment
+YAML Python Library
 ```shell
-pip install python-dotenv
+pip install PyYAML
 ```
 
 ## How to run the servers

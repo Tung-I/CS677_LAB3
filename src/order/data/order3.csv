@@ -199,6 +199,7 @@
 198,AAPL,10.0,sell
 199,IBM,10.0,sell
 200,CPQ,20.0,buy
+201,DJX,20.0,buy
 202,DJX,20.0,buy
 203,SPX,20.0,buy
 204,DJX,20.0,buy
@@ -308,6 +309,7 @@
 308,CPQ,20.0,buy
 309,SPX,10.0,sell
 310,INTC,20.0,buy
+311,IBM,10.0,sell
 312,IBM,10.0,sell
 313,MSFT,10.0,sell
 314,GOOG,10.0,sell

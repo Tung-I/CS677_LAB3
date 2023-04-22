@@ -11,12 +11,7 @@ from contextlib import contextmanager
 from threading  import Lock
 from socketserver import ThreadingMixIn
 import csv
-
-
-## TODO
-### one active check, one passive check
-
-from dotenv import load_dotenv
+import yaml
 
 
 class RWLock(object):
@@ -77,16 +72,16 @@ def lookup( file_path: str, order_number: str):
         
 
 
-def daemon_worker(port, server):
+def leader_broadcast(port, server):
     """
-    For the daemon thread running in the background.
-    It update the leader information whenever receiving the notification from the frontend.
+    A daemon thread running in the background
+    Update the leader information whenever receiving a frontend notification
     """
     # Create the socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', port))
     s.listen(5)
-    print(f"Listening to: {port}")
+    print(f"Listening to leader broadcast on: {port}")
     # Listen to the message
     while True:
         conn, info = s.accept()
@@ -99,11 +94,31 @@ def daemon_worker(port, server):
             # Be nominated as the leader
             elif data.decode() == 'You win':
                 print('I am the leader now.')
-                server.current_leader_id = server.service_id
+                server.curr_leader_id = server.id
             # Be aware of who's the leader
             else:
                 print(f'Order ID {data.decode()} is the leader now.')
-                server.current_leader_id = data.decode()
+                server.curr_leader_id = data.decode()
+            # Block for the next message
+            data = conn.recv(1024)
+
+def health_check(port):
+    """
+    Reply the regular health check from the frontend
+    """
+    # Create the socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', port))
+    s.listen(5)
+    print(f"Listening to regular health check on: {port}")
+    # Listen to the message
+    while True:
+        conn, info = s.accept()
+        data = conn.recv(1024)
+        while data:
+            if data.decode() == 'Ping':
+                # Send OK mmessage back
+                conn.send('OK'.encode("ascii"))
             # Block for the next message
             data = conn.recv(1024)
 
@@ -130,7 +145,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
             # Look up the order number
             order_number = self.path.partition("=")[-1]
-            lookup_result = lookup(os.path.join(self.server.out_dir, f'order{self.server.service_id}.csv'), order_number)
+            lookup_result = lookup(os.path.join(self.server.out_dir, f'order{self.server.id}.csv'), order_number)
 
             # If the order number is not found, return an error response
             if lookup_result == -1:
@@ -160,7 +175,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
             self.wfile.write(json.dumps(response).encode())
         
-        # Request of the current transaction number from other replicas
+        # Send the current order number to the replica coming back from a crash
         elif self.path.startswith("/synchronize"):   
             response = str(self.server.transaction_number)
             self.send_response(200)
@@ -168,7 +183,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response.encode())
 
-        # Invalid URL format
+        # Invalid URL
         else:
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
@@ -183,15 +198,15 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 
 
     def do_POST(self):
-        # If this is a `POST /propagate` request
+        # Receive propagation from the leader
         if self.path.startswith('/propagate'):
             # If this is the first propagation after coming back from a crash
+            # Ask for the order data that do not exist in the local database
             with self.server.rwlock.w_locked():
                 if self.server.resume:
-                    # Find the latest order number from the other nodes
-                    for port in self.server.peer_request_ports:
+                    for peer_host, peer_port in self.server.peer_request_addr:
                         response = None
-                        url = f'http://{self.server.order_host}:{port}/synchronize'
+                        url = f'http://{peer_host}:{peer_port}/synchronize'
                         try:
                             response = requests.get(url)
                         except requests.exceptions.RequestException as e:
@@ -204,7 +219,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                             for order_number_to_ask in range(self.server.transaction_number, latest_order_number):
                                 # Try to send a request to the replica 
                                 try:
-                                    url = f'http://{self.server.order_host}:{port}/order?order_number={order_number_to_ask}'
+                                    url = f'http://{peer_host}:{peer_port}/order?order_number={order_number_to_ask}'
                                     response = requests.get(url)
                                     # If the order number is found successfully
                                     if response.status_code == 200:
@@ -381,17 +396,19 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         }
                         self.wfile.write(json.dumps(response).encode())
 
+                        # Increase the transaction number
+                        self.server.transaction_number += 1
+
                         # Propagate the info to the follower nodes
-                        for port in self.server.peer_request_ports:
+                        transaction_number_to_broadcast = self.server.transaction_number - 1
+                        for peer_host, peer_port in self.server.peer_request_addr:
                             try:
                                 # Send an update request to the peer
-                                url = f'http://{self.server.order_host}:{port}/propagate?stock={stock_name}&amp;quantity={-quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
-                                peer_response = requests.post(url, data={"stock": stock_name, "quantity": -quantity, "type": order_type, "number": self.server.transaction_number})
+                                url = f'http://{peer_host}:{peer_port}/propagate?stock={stock_name}&amp;quantity={-quantity}&amp;type={order_type}&amp;number={transaction_number_to_broadcast}'
+                                peer_response = requests.post(url, data={"stock": stock_name, "quantity": -quantity, "type": order_type, "number": transaction_number_to_broadcast})
                             except requests.exceptions.RequestException as e:
                                 continue
 
-                        # Increase the transaction number
-                        self.server.transaction_number += 1
 
                     # If there's no enough remaining quantity
                     else:
@@ -442,17 +459,18 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
                         for order in self.server.orders:
                             writer.writerow([order['transaction number'], order['stock name'], order['quantity'], order['order type']])         
         
-                    # Propagate the info to the follower nodes
-                    for port in self.server.peer_request_ports:
-                        try:
-                            # Send an update request to the peer
-                            url = f'http://{self.server.order_host}:{port}/propagate?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}&amp;number={self.server.transaction_number}'
-                            peer_response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type, "number": self.server.transaction_number})
-                        except requests.exceptions.RequestException as e:
-                            continue
-
                     # Increase the transaction number
                     self.server.transaction_number += 1
+
+                    # Propagate the info to the follower nodes
+                    transaction_number_to_broadcast = self.server.transaction_number - 1
+                    for peer_host, peer_port in self.server.peer_request_addr:
+                        try:
+                            # Send an update request to the peer
+                            url = f'http://{peer_host}:{peer_port}/propagate?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}&amp;number={transaction_number_to_broadcast}'
+                            peer_response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type, "number": transaction_number_to_broadcast})
+                        except requests.exceptions.RequestException as e:
+                            continue
 
 
                 # Send an error response to the client if the order type is invalid
@@ -475,7 +493,7 @@ class OrderRequestHandler(http.server.BaseHTTPRequestHandler):
 # Create a class that inherits from ThreadingMixIn and HTTPServer to implement a threaded HTTP server
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     # Override the init function to save metadata in the server
-    def __init__(self, host_port_tuple, streamhandler, args):
+    def __init__(self, host_port_tuple, streamhandler, config):
         super().__init__(host_port_tuple, streamhandler)
         self.protocol_version = 'HTTP/1.1'
         # Order records
@@ -484,35 +502,37 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         # Read-write lock
         self.rwlock = RWLock()
         # Leader node information
-        self.current_leader_id = None
-        self.service_id = args.service_id
-        # Path to the database file
-        self.out_dir = args.out_dir
-        self.local_data_path = os.path.join(self.out_dir, f'order{self.service_id}.csv')
-        # Port and Host information
-        self.catalog_host_url = f'http://{args.catalog_host}'
-        self.catalog_port = args.catalog_port
+        self.curr_leader_id = None
+        self.id = config['ID']
+        # Paths to the local database
+        self.out_dir = config['OUTPUT_DIR']
+        self.local_data_path = os.path.join(self.out_dir, f'order{self.id}.csv')
+        # Catalog information
+        self.catalog_host = config['CATALOG_HOST']
+        self.catalog_host_url = f'http://{self.catalog_host}'
+        self.catalog_port = config['CATALOG_PORT']
         self.order_host = os.environ.get('ORDER_HOST')
-        if self.service_id == '3':
-            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
-            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
-            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT2')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
-            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT2')), int(os.environ.get('ORDER_SOCKET_PORT1'))]
-        elif self.service_id == '2':
-            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
-            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
-            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT1'))]
-            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT3')), int(os.environ.get('ORDER_SOCKET_PORT1'))]
-        elif self.service_id == '1':
-            self.request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
-            self.socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
-            self.peer_request_ports = [int(os.environ.get('ORDER_REQUEST_PORT3')), int(os.environ.get('ORDER_REQUEST_PORT2'))]
-            self.peer_socket_ports = [int(os.environ.get('ORDER_SOCKET_PORT3')), int(os.environ.get('ORDER_SOCKET_PORT2'))]
+        # Peer request address
+        if self.id == '3':
+            self.peer_request_addr = [
+                (config["ORDER_HOST2"], config["ORDER_PORT2"]),
+                (config["ORDER_HOST1"], config["ORDER_PORT1"])
+                ]
+        elif self.id == '2':
+            self.peer_request_addr = [
+                (config["ORDER_HOST3"], config["ORDER_PORT3"]),
+                (config["ORDER_HOST1"], config["ORDER_PORT1"])
+                ]
+        elif self.id == '1':
+           self.peer_request_addr = [
+                (config["ORDER_HOST3"], config["ORDER_PORT3"]),
+                (config["ORDER_HOST2"], config["ORDER_PORT2"])
+                ]
         else:
-            raise RuntimeError("Invalid argument: service id {args.service_id}")
+            raise RuntimeError(f"Invalid argument: service id {config['ID']}")
 
-        # If the server is just coming back from a crash
-        self.resume = args.resume
+        # Whether this server is just coming back from a crash
+        self.resume = config['RESUME']
 
     # Override the server_bind function to enable socket reuse and bind to the server address
     def server_bind(self):
@@ -522,36 +542,36 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # Define the main function to start the server
 def main(args):
-    if args.service_id == '3':
-        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT3'))
-        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT3'))
-    elif args.service_id == '2':
-        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT2'))
-        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT2'))
-    elif args.service_id == '1':
-        request_listening_port = int(os.environ.get('ORDER_REQUEST_PORT1'))
-        socket_listening_port = int(os.environ.get('ORDER_SOCKET_PORT1'))
-    else:
-        raise RuntimeError("Invalid argument: service id {args.service_id}")
+    # Check the validity of the assigned ID
+    if args.id != '3' and args.id != '2' and args.id != '1':
+          raise RuntimeError("Invalid argument: service id {args.id}")
+    # Creat a config object
+    if args.config_path:
+        with open(args.config_path, "r") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+    # Add additional variables to config
+    config["RESUME"] = args.resume
+    config["ID"] = args.id   
+
 
     # Create a threaded HTTP server with the given port and output directory
-    httpd = ThreadedHTTPServer(("", request_listening_port), OrderRequestHandler, args)
-    # Print a message to indicate that the server is serving on the specified port
-    print(f"Serving on port {request_listening_port}")
+    my_id = config["ID"]
+    frontend_request_listening_port = config[f"ORDER_PORT{my_id}"]
+    httpd = ThreadedHTTPServer(("", frontend_request_listening_port), OrderRequestHandler, config)
 
-
-    # Run from scratch or resume from a crash
-    if not args.resume:
+    # Initialize local database
+    if not config["RESUME"]:
         with open(httpd.local_data_path, mode='w', newline='') as file:
             pass
+    # Resume from a crash
     else:
         with httpd.rwlock.w_locked():
-            # Look at the local database and get the latest transaction number 
+            # Look at the local database to get the last recorded order number 
             httpd.orders = []
             with open(httpd.local_data_path, newline='') as f:
                 csv_reader = csv.reader(f)
                 for row in csv_reader:
-                    # Update the memory
+                    # Load the orders into memory
                     if len(row) == 0:
                         continue
                     httpd.orders.append(
@@ -562,36 +582,37 @@ def main(args):
                             "quantity": row[2]
                         }
                     )
-            # Recover the local order number
+            # Update local transaction number
             if len(httpd.orders) != 0:
                 httpd.transaction_number = httpd.orders[-1]["transaction number"] + 1
             else:
                 httpd.transaction_number = 0
 
-    # Run a daemon thread to listen to the leader selection result from the frontend
-    t = threading.Thread(target=daemon_worker, daemon=True, args=[socket_listening_port, httpd])
-    t.start()
+    # Run a daemon thread that listens to the leader selection broadcast from the frontend
+    leader_broadcast_listening_port = config[f"ORDER_LEADER_BROADCAST_PORT{my_id}"]
+    t1 = threading.Thread(target=leader_broadcast, daemon=True, args=[leader_broadcast_listening_port, httpd])
+    t1.start()
+
+    # Run a daemon thread to listen to the regular health check from the frontend
+    health_check_port = config[f"ORDER_HEALTH_CHECK_PORT{my_id}"]
+    t2 = threading.Thread(target=health_check, daemon=True, args=[health_check_port])
+    t2.start()
 
     # Start the server and keep it running indefinitely
+    print(f"Serving on port {frontend_request_listening_port}")
     httpd.serve_forever()
 
 
 # Check if the script is being run as the main module
 if __name__ == "__main__":
-    # Load env variables
-    load_dotenv()
-
     # Create an argument parser with options for the port and output directory
     parser = argparse.ArgumentParser(description='Order Server.')
     # Assign the ID
-    parser.add_argument('--id', dest='service_id', help='Service ID', type=str)
-    # Assign the directory of orders.csv
-    parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)
-    # Assign the host and the port of the catalog service 
-    parser.add_argument('--catalog_host', dest='catalog_host', help='Catalog Host', default=os.environ.get('CATALOG_HOST'), type=str)
-    parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_PORT'), type=str)
-    # Restart or Resume
+    parser.add_argument('--id', dest='id', help='Service ID', type=str)
     parser.add_argument('--resume', dest='resume', help='Resume from the last order record', default=False, action='store_true')
-    
+    # Load variables from config.yaml
+    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
+    # Parse args
     args = parser.parse_args()
+
     main(args)

@@ -7,14 +7,14 @@ from typing import Callable, Sequence, Union, List
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 import json
+import time
+import yaml
 import sys, os
 import select
 
 from contextlib import contextmanager
 from collections import OrderedDict
 from threading  import Lock
-from dotenv import load_dotenv
-
 
 
 class RWLock(object):
@@ -140,51 +140,71 @@ class LRUCache:
                 self.timestamp += 1
 
 
-def leader_selection(order_host, order_socket_ports, timeout=0.1):
+def leader_selection(server):
     # Try to connect to an order server, starting from the highest id
-    leader_id = None
-    while leader_id is None:
+    server.leader_id = None
+    while server.leader_id is None:
         for order_id in ['3', '2', '1']:
             # Create a socket
-            port = order_socket_ports[order_id]
+            order_host, order_port = server.order_leader_broadcast_addrs[order_id]
             s = socket.socket()
             # Ping the server and see if there is a receipt
             try:
-                s.connect((order_host, port))
+                s.connect((order_host, order_port))
                 s.send("Ping".encode("ascii"))
                 data = s.recv(1024)
+                # If receive 'OK', pick it as the leader
                 if data.decode() == 'OK':
                     s.send("You win".encode("ascii"))
-                    leader_id = order_id
-                    print(f'Now send requests to Order ID {leader_id}')
+                    server.leader_id = order_id
+                    print(f'Now send requests to Order ID {server.leader_id}')
                     s.close()
                     break
             except:
                 continue
 
-                
-    # Notify all the replicas that a leader has been selected
+    # Notify all the replicas that the leader has been selected
     for order_id in ['3', '2', '1']:
-        if order_id != leader_id:
+        if order_id != server.leader_id:
             # Create a socket
-            port = order_socket_ports[order_id]
+            order_host, order_port = server.order_leader_broadcast_addrs[order_id]
             s = socket.socket()
-            # Notify the leader
             # If no response, just continue
             try:
-                s.connect((order_host, port))
-                s.send(leader_id.encode("ascii"))
-                
+                s.connect((order_host, order_port))
+                s.send(server.leader_id.encode("ascii"))      
             except:
                 continue
 
-    return leader_id
 
+def health_check(server, time_interval):
+    """
+    Active health check.
+    If the leader is dead, re-do leader selection
+    """
+    while True:
+        time.sleep(time_interval)
+        leader_host, leader_port = server.order_health_check_addrs[server.leader_id]
+        # Send a health check
+        try:
+            # print(f'Check {leader_host, leader_port}')
+            s = socket.socket()
+            s.connect((leader_host, leader_port))
+            s.send("Ping".encode("ascii"))
+            data = s.recv(1024)
+            # If receive 'OK', the leader is alive
+            if data.decode() == 'OK':
+                s.close()
+            else:
+                raise Exception('No response from the leader.')
+        except:
+            # re-select leader
+            with server.rwlock.w_locked():
+                leader_selection(server)
 
 
 # Define a stock request handler class that handles HTTP GET and POST requests
 class StockRequestHandler(http.server.BaseHTTPRequestHandler):
-            
     # override the default do_GET() method
     def do_GET(self):
         # Handle a GET request.
@@ -271,13 +291,14 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             response = None
             while response == None: 
                 try:
-                    order_port = self.server.order_request_ports[self.server.order_leader_id]
-                    url = f'{self.server.order_host_url}:{order_port}/order?order_number={order_number}'
+                    leader_host, leader_port = self.server.order_request_addrs[self.server.leader_id]
+                    url = f'http://{leader_host}:{leader_port}/order?order_number={order_number}'
                     response = requests.get(url)
                 except requests.exceptions.RequestException as e:
+                    # Passive health check
                     print(f'An request exception occurs: {e}. Re-select a leader.')
-                    order_leader_id = leader_selection(self.server.order_host, self.server.order_socket_ports)
-                    self.server.order_leader_id = order_leader_id
+                    with self.server.rwlock.w_locked():
+                        leader_selection(self.server)
                     
 
             # If the order number exists
@@ -369,15 +390,14 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             response = None
             while response == None: 
                 try:
-                    order_port = self.server.order_request_ports[self.server.order_leader_id]
-                    url = f'{self.server.order_host_url}:{order_port}/order?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}'
+                    leader_host, leader_port = self.server.order_request_addrs[self.server.leader_id]
+                    url = f'http://{leader_host}:{leader_port}/order?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}'
                     response = requests.post(url, data={"stock": stock_name, "quantity": quantity, "type": order_type})
                 except requests.exceptions.RequestException as e:
+                    # Passive health check
                     print(f'An request exception occurs: {e}. Re-select a leader.')
-                    order_leader_id = leader_selection(self.server.order_host, self.server.order_socket_ports)
-                    self.server.order_leader_id = order_leader_id
-
-
+                    with self.server.rwlock.w_locked():
+                        leader_selection(self.server)
 
             # Send the response to the client
             if response.status_code == 200:
@@ -414,17 +434,36 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
 # Define a threaded HTTP server that allows for multiple concurrent requests.
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
      # Override the init function to save metadata in the server
-    def __init__(self, host_port_tuple, streamhandler, args):
+    def __init__(self, host_port_tuple, streamhandler, config):
         super().__init__(host_port_tuple, streamhandler)
-        self.order_host_url = f'http://{args.order_host}'
-        self.catalog_host_url = f'http://{args.catalog_host}'
-        self.catalog_port = args.catalog_port
         self.protocol_version = 'HTTP/1.1'
-        self.cache = LRUCache(args.cache_size, args.log_path)
-        self.order_host = args.order_host
-        self.order_request_ports = {'3': args.order_request_port3, '2': args.order_request_port2, '1': args.order_request_port1}
-        self.order_socket_ports = {'3': args.order_socket_port3, '2': args.order_socket_port2, '1': args.order_socket_port1}
-        self.order_leader_id = None
+        # Initialize cache
+        self.cache = LRUCache(config["CACHE_SIZE"], config["LOG_PATH"])
+        # Order request address
+        self.order_request_addrs = {
+            '3': (config["ORDER_HOST3"], config["ORDER_PORT3"]),
+            '2': (config["ORDER_HOST2"], config["ORDER_PORT2"]),
+            '1': (config["ORDER_HOST1"], config["ORDER_PORT1"])
+        }
+        # Catalog request address
+        self.catalog_host = config["CATALOG_HOST"]
+        self.catalog_host_url = f'http://{self.catalog_host}'
+        self.catalog_port = config["CATALOG_PORT"]
+        # Leader selection broadcast address
+        self.order_leader_broadcast_addrs = {
+            '3': (config["ORDER_HOST3"], config["ORDER_LEADER_BROADCAST_PORT3"]),
+            '2': (config["ORDER_HOST2"], config["ORDER_LEADER_BROADCAST_PORT2"]),
+            '1': (config["ORDER_HOST1"], config["ORDER_LEADER_BROADCAST_PORT1"])
+        }
+        # Regular health check address
+        self.order_health_check_addrs = {
+            '3': (config["ORDER_HOST3"], config["ORDER_HEALTH_CHECK_PORT3"]),
+            '2': (config["ORDER_HOST2"], config["ORDER_HEALTH_CHECK_PORT2"]),
+            '1': (config["ORDER_HOST1"], config["ORDER_HEALTH_CHECK_PORT1"])
+        }
+        self.leader_id = None
+        # Read-write lock
+        self.rwlock = RWLock()
 
     # Override the server_bind function to enable socket reuse and bind to the server address
     def server_bind(self):
@@ -432,43 +471,36 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         self.socket.bind(self.server_address)
 
 def main(args):
+    # Creat a config object
+    if args.config_path:
+        with open(args.config_path, "r") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+    # Add additional variables to config
+    config["CACHE_SIZE"] = args.cache_size
+    config["LOG_PATH"] = args.log_path
+
     # Set up the threaded HTTP server with the given port and request handler.
-    httpd = ThreadedHTTPServer(("", args.port), StockRequestHandler, args)
+    httpd = ThreadedHTTPServer(("", config['FRONTEND_PORT']), StockRequestHandler, config)
     # Select the leader order service
-    order_leader_id = leader_selection(httpd.order_host, httpd.order_socket_ports)
-    httpd.order_leader_id = order_leader_id
-    print(f"Serving on port {args.port}")
+    leader_selection(httpd)
+    print(f"Serving on port {config['FRONTEND_PORT']}")
+
+    # Run a daemon thread to actively send health check to the leader
+    t = threading.Thread(target=health_check, daemon=True, args=[httpd, float(config['HEALTH_CHECK_INTERVAL'])])
+    t.start()
+
     # Start serving requests.
     httpd.serve_forever()
 
 
 if __name__ == "__main__":
-    # Load env variables
-    load_dotenv()
-
     # Parse command-line arguments.
     parser = argparse.ArgumentParser(description='Server.')
+     # Load variables from config.yaml
+    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
 
-    # Assign the listening port
-    parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('FRONTEND_PORT'), type=int)
-
-    # Assign the host and the port of the order service 
-    parser.add_argument('--order_host', dest='order_host', help='Order Host', default=os.environ.get('ORDER_HOST'), type=str)
-    parser.add_argument('--order_request_port1', dest='order_request_port1', help='The first request port', default=os.environ.get('ORDER_REQUEST_PORT1'), type=int)
-    parser.add_argument('--order_request_port2', dest='order_request_port2', help='The second request port', default=os.environ.get('ORDER_REQUEST_PORT2'), type=int)
-    parser.add_argument('--order_request_port3', dest='order_request_port3', help='The third request port', default=os.environ.get('ORDER_REQUEST_PORT3'), type=int)
-    parser.add_argument('--order_socket_port1', dest='order_socket_port1', help='The first socket port', default=os.environ.get('ORDER_SOCKET_PORT1'), type=int)
-    parser.add_argument('--order_socket_port2', dest='order_socket_port2', help='The second socket port', default=os.environ.get('ORDER_SOCKET_PORT2'), type=int)
-    parser.add_argument('--order_socket_port3', dest='order_socket_port3', help='The third socket port', default=os.environ.get('ORDER_SOCKET_PORT3'), type=int)
-
-    # Assign the host and the port of the catalog service 
-    parser.add_argument('--catalog_host', dest='catalog_host', help='Catalog Host', default=os.environ.get('CATALOG_HOST'), type=str)
-    parser.add_argument('--catalog_port', dest='catalog_port', help='Catalog Port', default=os.environ.get('CATALOG_PORT'), type=int)
-
-    # Assign the size of the cache
+    # Assign the size and log path of the cache
     parser.add_argument('--cache_size', dest='cache_size', help='Size of the cache', default=5, type=int)
-
-    # Assign the path of the cache log file for debugging 
     parser.add_argument('--log', dest='log_path', help='Path to the cache log', default="./log.json", type=str)
     
     args = parser.parse_args()

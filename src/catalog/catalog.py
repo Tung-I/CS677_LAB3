@@ -3,14 +3,12 @@ import http.server
 import argparse
 import socket
 import os
+import yaml
 import requests
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 from contextlib import contextmanager
 from threading  import Lock
-
-from dotenv import load_dotenv
-
 
 
 # Define the filename for the catalog JSON file
@@ -286,13 +284,13 @@ class CatalogRequestHandler(http.server.BaseHTTPRequestHandler):
 # Define a subclass of HTTPServer that uses threading to handle multiple requests concurrently
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     # Override the init function to save metadata in the server
-    def __init__(self, host_port_tuple, streamhandler, out_dir, args):
+    def __init__(self, host_port_tuple, streamhandler, config):
         super().__init__(host_port_tuple, streamhandler)
-        self.out_dir = out_dir
+        self.out_dir = config["OUTPUT_DIR"]
         self.rwlock = RWLock()
         self.protocol_version = 'HTTP/1.1'
-        self.frontend_host = args.frontend_host
-        self.frontend_port = args.frontend_port
+        self.frontend_host = config['FRONTEND_HOST']
+        self.frontend_port = config['FRONTEND_PORT']
         self.stock_name_list = ["AAPL", "GOOG", "MSFT", "SPX", "OEX", "DJX", "NDX", "CPQ", "INTC", "IBM"]
 
     # Override the server_bind method to set a socket option for reusing the address
@@ -302,34 +300,27 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # Define the main function that runs the server
 def main(args):
+    # Creat a config object
+    if args.config_path:
+        with open(args.config_path, "r") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+    
     # Create a threaded HTTP server that listens on the specified port and handles requests with the CatalogRequestHandler class
-    httpd = ThreadedHTTPServer(("", args.port), CatalogRequestHandler, args.out_dir, args)
+    httpd = ThreadedHTTPServer(("", config['CATALOG_PORT']), CatalogRequestHandler, config)
 
     # Initiate the stocks and prices in the catalog
-    init_catalog(os.path.join(args.out_dir, "catalog.json"), httpd.rwlock)
+    init_catalog(os.path.join(config["OUTPUT_DIR"], "catalog.json"), httpd.rwlock)
 
     # Start serving requests on the specified port
-    print(f"Serving on port {args.port}")
+    print(f"Serving on port {config['CATALOG_PORT']}")
     httpd.serve_forever()
 
 
 if __name__ == "__main__":
-    # Load env variables
-    load_dotenv()
-
     # Create an argument parser to read command-line arguments
     parser = argparse.ArgumentParser(description='Server.')
-
-    # Add an argument for specifying the port number
-    parser.add_argument('--port', dest='port', help='Port', default=os.environ.get('CATALOG_PORT'), type=int)
-
-    # Add an argument for the output directory
-    parser.add_argument('--out_dir', dest='out_dir', help='Output directory', default=os.environ.get('OUTPUT_DIR'), type=str)
-
-    # Assign the host and the port of the frontend service 
-    parser.add_argument('--frontend_host', dest='frontend_host', help='Frontend Host', default=os.environ.get('FRONTEND_HOST'), type=str)
-    parser.add_argument('--frontend_port', dest='frontend_port', help='Frontend Port', default=os.environ.get('FRONTEND_PORT'), type=str)
-
+    # Load variables from config.yaml
+    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
     # Parse the command-line arguments
     args = parser.parse_args()
 
