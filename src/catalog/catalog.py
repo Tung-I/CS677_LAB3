@@ -276,7 +276,7 @@ class CatalogRequestHandler(http.server.BaseHTTPRequestHandler):
 
         # Send an invalidation request to the frontend
         url = f'http://{self.server.frontend_host}:{self.server.frontend_port}/invalidation?stock={stock_name}'
-        frontend_response = requests.get(url)
+        frontend_response = requests.post(url)
         if frontend_response.status_code != 200:
             raise RuntimeError('Problematic response to the invalidation request')
 

@@ -2,61 +2,61 @@
     "AAPL": {
         "name": "Apple Inc.",
         "price": 15.99,
-        "remaining_quantity": 60.0,
-        "accumulated_volume": 80.0
+        "remaining_quantity": 40.0,
+        "accumulated_volume": 620.0
     },
     "GOOG": {
         "name": "Alphabet Inc.",
         "price": 16.99,
-        "remaining_quantity": 70.0,
-        "accumulated_volume": 90.0
+        "remaining_quantity": 10.0,
+        "accumulated_volume": 750.0
     },
     "MSFT": {
         "name": "Microsoft Corporation",
         "price": 17.99,
-        "remaining_quantity": 100.0,
-        "accumulated_volume": 80.0
+        "remaining_quantity": 20.0,
+        "accumulated_volume": 640.0
     },
     "SPX": {
         "name": "S&P 500 Index",
         "price": 10.99,
-        "remaining_quantity": 110.0,
-        "accumulated_volume": 90.0
+        "remaining_quantity": 10.0,
+        "accumulated_volume": 590.0
     },
     "OEX": {
         "name": "S&P 100 Index",
         "price": 11.99,
-        "remaining_quantity": 80.0,
-        "accumulated_volume": 100.0
+        "remaining_quantity": 20.0,
+        "accumulated_volume": 600.0
     },
     "DJX": {
         "name": "Dow Jones Industrial Average",
         "price": 12.99,
-        "remaining_quantity": 120.0,
-        "accumulated_volume": 60.0
+        "remaining_quantity": 40.0,
+        "accumulated_volume": 540.0
     },
     "NDX": {
         "name": "NASDAQ 100 Stick Index",
         "price": 13.99,
-        "remaining_quantity": 20.0,
-        "accumulated_volume": 80.0
+        "remaining_quantity": 0.0,
+        "accumulated_volume": 500.0
     },
     "CPQ": {
         "name": "Compaq Computer Corp",
         "price": 14.99,
-        "remaining_quantity": 110.0,
-        "accumulated_volume": 50.0
+        "remaining_quantity": 20.0,
+        "accumulated_volume": 680.0
     },
     "INTC": {
         "name": "Intel Corp",
         "price": 9.99,
-        "remaining_quantity": 110.0,
-        "accumulated_volume": 90.0
+        "remaining_quantity": 40.0,
+        "accumulated_volume": 660.0
     },
     "IBM": {
         "name": "International Business Machines Corp",
         "price": 21.99,
-        "remaining_quantity": 40.0,
-        "accumulated_volume": 100.0
+        "remaining_quantity": 0.0,
+        "accumulated_volume": 540.0
     }
 }

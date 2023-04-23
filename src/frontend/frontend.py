@@ -319,16 +319,6 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 raise RuntimeError("Frontend should check the URL for the order service")
 
-        # Invalidation request from Catalog
-        elif self.path.startswith("/invalidation?stock="):
-            stock_name = self.path.split('=')[-1]
-            result = self.server.cache.pop(stock_name)
-
-            self.send_response(200)
-            self.send_header("Content-type", "text/plain")
-            self.end_headers()
-            self.wfile.write("The item was successfully removed from the cache".encode())
-
         # The URL of the GET request is invalid -> raise error 404 
         else:
             self.send_response(404)
@@ -417,6 +407,16 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(response.content)
             else:
                 raise RuntimeError('Unknown status code')
+
+        # Invalidation request from Catalog
+        elif self.path.startswith("/invalidation?stock="):
+            stock_name = self.path.split('=')[-1]
+            result = self.server.cache.pop(stock_name)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write("The item was successfully removed from the cache".encode())
 
         else:
             # The URL of the POST request does not start wtih "/order" -> raise error 404 
