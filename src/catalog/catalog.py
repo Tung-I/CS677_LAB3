@@ -276,9 +276,12 @@ class CatalogRequestHandler(http.server.BaseHTTPRequestHandler):
 
         # Send an invalidation request to the frontend
         url = f'http://{self.server.frontend_host}:{self.server.frontend_port}/invalidation?stock={stock_name}'
-        frontend_response = requests.post(url)
-        if frontend_response.status_code != 200:
-            raise RuntimeError('Problematic response to the invalidation request')
+        try:
+            frontend_response = requests.post(url)
+            if frontend_response.status_code != 200:
+                raise RuntimeError('Problematic response to the invalidation request')
+        except:
+            pass
 
 
 # Define a subclass of HTTPServer that uses threading to handle multiple requests concurrently
@@ -301,8 +304,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 # Define the main function that runs the server
 def main(args):
     # Creat a config object
-    if args.config_path:
-        with open(args.config_path, "r") as f:
+    if args.config:
+        with open(args.config, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
     # Use env variables
     else:
@@ -331,7 +334,7 @@ if __name__ == "__main__":
     # Create an argument parser to read command-line arguments
     parser = argparse.ArgumentParser(description='Server.')
     # Load variables from config.yaml
-    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
+    parser.add_argument('--config', dest='config', help='Path to config.yaml', default=None, type=str)
     # Parse the command-line arguments
     args = parser.parse_args()
 

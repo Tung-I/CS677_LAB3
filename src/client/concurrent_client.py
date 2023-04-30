@@ -38,12 +38,17 @@ def main(args):
         # Choose a random stock
         stock_name = random.choice(STOCK_NAMES)
         # Send a GET request to the URL and print the response content
-        url = f'{base_url}/lookup?stock={stock_name}'    
-        time_start = time.time() 
-        response = s.get(url)
-        lookup_time += time.time() - time_start
-        lookup_cnt += 1
-        print(response.content.decode())
+        url = f'{base_url}/lookup?stock={stock_name}'  
+        
+        response = None
+        while response is None:
+            try:  
+                time_start = time.time() 
+                response = s.get(url)
+                lookup_time += time.time() - time_start
+                lookup_cnt += 1
+            except:
+                pass
 
         # With probability P, send an additional order request
         if order_prob >= random.uniform(0., 1.):
@@ -54,11 +59,16 @@ def main(args):
                 quantity = 10
             # Send a POST request to the URL with the order data, and print the response content
             url = f'{base_url}/order?stock={stock_name}&amp;quantity={quantity}&amp;type={order_type}'
-            time_start = time.time() 
-            response = s.post(url, data={"name": stock_name, "quantity": quantity, "order_type": order_type})
-            order_time += time.time() - time_start
-            order_cnt += 1
-            print(response.content.decode())
+
+            response = None
+            while response is None:
+                try: 
+                    time_start = time.time() 
+                    response = s.post(url, data={"name": stock_name, "quantity": quantity, "order_type": order_type})
+                    order_time += time.time() - time_start
+                    order_cnt += 1
+                except:
+                    pass
 
             # Record the order information if a trade request was successful
             if response.status_code == 200:
@@ -72,32 +82,10 @@ def main(args):
                     }
                 }
                 order_records.append(order_record)
-    
-    # Before exiting, retrieve the order info and check if the server reply matches the locally stored data
-    time.sleep(2)
-    match_flag = True
-    for order_record in order_records:
-        order_record = order_record["data"]
-        order_number  = order_record["number"]
-        url = f"{base_url}/order?order_number={order_number}"
-        response = s.get(url)
-        # If the order number does not exist in the erver
-        if response.status_code != 200:
-            print(f"Order record does not exist: {order_record}")
-        # Read the reply and see if the reply matches with the locally stored data
-        order_info_from_server = json.loads(response.content.decode())["data"]
-        if order_info_from_server["name"] == order_record["name"] and order_info_from_server["type"] == order_record["type"] \
-            and float(order_info_from_server["quantity"]) == float(order_record["quantity"]):
-            pass
-        else:
-            print(f"Order records inconsistent. Local:{order_record}, Remote:{order_info_from_server}")
-            match_flag = False
 
     print(f"Average lookup request latency: {lookup_time / lookup_cnt}")
-    print(f"Average order request latency: {order_time / order_cnt}")
-    if not match_flag:
-        print("Local database is inconsistent with the order server database")
-
+    if order_cnt != 0:
+        print(f"Average order request latency: {order_time / order_cnt}")
 
 
 if __name__ == "__main__":

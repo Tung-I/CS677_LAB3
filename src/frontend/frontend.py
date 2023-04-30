@@ -101,9 +101,9 @@ class LRUCache:
         else:
             # Pop the item before putting it into the cache
             # So the item can be the newest in the cache
-            with self.rwlock.w_locked():
-                self.items[key] = self.items.pop(key)
-                return self.items[key]
+
+            self.items[key] = self.items.pop(key)
+            return self.items[key]
 
     def put(self, key, item):
         with self.rwlock.w_locked():
@@ -228,10 +228,13 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
             stock_name = self.path.split('=')[-1]
 
             # Check whether the request can be served from the cache
-            cache_item = self.server.cache.get(stock_name)
+            if self.server.cache_or_not:
+                cache_item = self.server.cache.get(stock_name)
+            else:
+                cache_item = -1
 
             # If it's a cache miss
-            if cache_item  == -1:
+            if cache_item == -1:
                 # Forward the request to Catalog 
                 url = f'{self.server.catalog_host_url}:{self.server.catalog_port}/lookup?stock={stock_name}'
                 response = requests.get(url)
@@ -244,14 +247,16 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(response.content)
 
-                    # Update the cache
+                    # Update the cache (if cache is used)
                     response_content = json.loads(response.content.decode())
-                    item_to_save = {
-                        "name": response_content['data']["name"],
-                        "price": response_content['data']["price"],
-                        "quantity": response_content['data']["quantity"]
-                    }
-                    self.server.cache.put(stock_name, item_to_save)
+                    if self.server.cache_or_not:
+                        item_to_save = {
+                            "name": response_content['data']["name"],
+                            "price": response_content['data']["price"],
+                            "quantity": response_content['data']["quantity"]
+                        }
+                        self.server.cache.put(stock_name, item_to_save)
+                    
 
                 # If the stock name does not exist in the catalog
                 elif response.status_code == 404:
@@ -278,8 +283,9 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps(response).encode())
 
-            # Dump the log after every lookup request
-            self.server.cache.dump()
+            # Dump the log after every lookup request (if cache is used)
+            if self.server.cache_or_not and self.server.dump:
+                self.server.cache.dump()
 
         # Query existing orders
         elif self.path.startswith("/order?order_number"):
@@ -410,8 +416,9 @@ class StockRequestHandler(http.server.BaseHTTPRequestHandler):
 
         # Invalidation request from Catalog
         elif self.path.startswith("/invalidation?stock="):
-            stock_name = self.path.split('=')[-1]
-            result = self.server.cache.pop(stock_name)
+            if self.server.cache_or_not:
+                stock_name = self.path.split('=')[-1]
+                result = self.server.cache.pop(stock_name)
 
             self.send_response(200)
             self.send_header("Content-type", "text/plain")
@@ -438,7 +445,10 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         super().__init__(host_port_tuple, streamhandler)
         self.protocol_version = 'HTTP/1.1'
         # Initialize cache
-        self.cache = LRUCache(config["CACHE_SIZE"], config["CACHE_LOG_PATH"])
+        self.cache_or_not = config["CACHE"]
+        self.dump = config["DUMP"]
+        if self.cache_or_not:
+            self.cache = LRUCache(config["CACHE_SIZE"], config["CACHE_LOG_PATH"])
         # Order request address
         self.order_request_addrs = {
             '3': (config["ORDER_HOST3"], config["ORDER_PORT3"]),
@@ -473,8 +483,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 def main(args):
     # Creat a config object
     # Load a config file
-    if args.config_path:
-        with open(args.config_path, "r") as f:
+    if args.config:
+        with open(args.config, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
     # Use env variables
     else:
@@ -502,8 +512,17 @@ def main(args):
 
         config["OUTPUT_DIR"] = os.environ.get("OUTPUT_DIR")
         config["HEALTH_CHECK_INTERVAL"] = os.environ.get("HEALTH_CHECK_INTERVAL")
+
+        config["CACHE"] = os.environ.get("CACHE")
         config["CACHE_SIZE"] = os.environ.get("CACHE_SIZE")
         config["CACHE_LOG_PATH"] = os.environ.get("CACHE_LOG_PATH")
+        config["DUMP"] = os.environ.get("DUMP")
+
+    # Initialize the cache log file
+    if config["CACHE"] and config["DUMP"]:
+        with open(config["CACHE_LOG_PATH"], mode='w', newline='') as file:
+            pass
+
 
 
     # Set up the threaded HTTP server with the given port and request handler.
@@ -525,7 +544,8 @@ if __name__ == "__main__":
     # Parse command-line arguments.
     parser = argparse.ArgumentParser(description='Server.')
      # Load variables from config.yaml
-    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)    
+    parser.add_argument('--config', dest='config', help='Path to config.yaml', default=None, type=str)    
+    parser.add_argument('--dump', dest='dump', help='Dump the cache items into log.json', default=False, action='store_true')
     args = parser.parse_args()
 
     # Start the server with the given arguments.

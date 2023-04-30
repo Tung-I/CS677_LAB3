@@ -546,8 +546,8 @@ def main(args):
     if args.id != '3' and args.id != '2' and args.id != '1':
           raise RuntimeError("Invalid argument: service id {args.id}")
     # Creat a config object
-    if args.config_path:
-        with open(args.config_path, "r") as f:
+    if args.config:
+        with open(args.config, "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
     # Use env variables
     else:
@@ -637,7 +637,7 @@ if __name__ == "__main__":
     parser.add_argument('--id', dest='id', help='Service ID', type=str)
     parser.add_argument('--resume', dest='resume', help='Resume from the last order record', default=False, action='store_true')
     # Load variables from config.yaml
-    parser.add_argument('--config_path', dest='config_path', help='Path to config.yaml', default=None, type=str)
+    parser.add_argument('--config', dest='config', help='Path to config.yaml', default=None, type=str)
     # Parse args
     args = parser.parse_args()
 
